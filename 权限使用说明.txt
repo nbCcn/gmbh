@@ -1,0 +1,2 @@
+在对应的方法上添加注解
+@MenuOperateAuthority(belongMenuCode = "001",operationType = OperationType.ADD)

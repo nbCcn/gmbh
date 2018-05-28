@@ -1,0 +1,187 @@
+server:
+  port: 8082
+#  ssl:
+#    key-store: classpath:clannad.p12
+#    key-password: macross
+#    key-store-type: PKCS12
+#    key-alias: konnon
+  servlet-path: /
+  tomcat:
+    max-threads: 800
+    uri-encoding: UTF-8
+    # 存放Tomcat的日志、Dump等文件的临时文件夹，默认为系统的tmp文件夹
+    basedir: /usr/local/tomcat/admin
+    #内嵌tomcat安全漏洞处理
+    port-header: HEAD,PUT,DELETE,OPTIONS,TRACE,COPY,SEARCH,PROPFIND
+
+
+#druid监控平台参数
+druid:
+  #白名单
+  allow: 127.0.0.1
+  #黑名单
+  deny:
+  #登陆名
+  loginUsername: admin
+  loginPassword: admin
+  #是否能够重置数据 禁用HTML页面上的“Reset All”功能
+  resetEnable: false
+
+#swagger2页面展示的一些参数
+swagger2:
+  service:
+    #标题
+    title: 古茗供货系统平台API接口说明文档
+    #描述
+    description: 供货系统服务端
+    #项目地址
+    serviceUrl: https://www.baidu.com/
+    #接口版本
+    version: 1.0
+
+endpoints:
+  shutdown:
+    path: /stopServer
+    enabled: true
+
+security:
+  user:
+    name: admin
+    password: admin
+  basic:
+    path: /stopServer
+    enabled: true
+
+management:
+  security:
+    enabled: false
+  port: 8043
+  #指定访问ip
+  address: 127.0.0.1
+
+
+spring:
+  #国际化
+  messages:
+    basename: i18n/messages
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    base:
+      driver-class-name: com.mysql.jdbc.Driver
+      ##121.43.190.92
+      url: jdbc:mysql://127.0.0.1:3306/book?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true
+      username: root
+      password: root
+      initial-size: 15
+      min-idle: 15
+      max-idle: 20
+      max-active: 20
+      #获取连接等待时间
+      max-wait: 60000
+      #检测的间隔时间
+      time-between-eviction-runs-millis: 3600000
+      #连接在连接池中的最小生存时间
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      #打开PSCache.并指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      max-pool-prepered-statement-per-connection-size: 20
+      #配置监控统计拦截的filters，去掉后监控界面sql将无法统计，‘wall’用于防火墙
+      filters: stat,wall,log4j2
+      #connectionProperties属性打开mergeSql功能；慢sql记录
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+
+  rocketmq:
+    name-server-address: 127.0.0.1:9876
+    # 可选, 如果无需发送消息则忽略该配置
+    producer-group: Producer
+    # 发送超时配置毫秒数, 可选, 默认3000
+    send-msg-timeout: 5000
+    trace-enabled: true
+    #vip-channel-enabled: false
+
+#    kingdee:
+#      driver-class-name: com.mysql.jdbc.Driver
+#      url: jdbc:mysql://121.43.190.92:3306/book?useUnicode=true&characterEncoding=utf8&autoReconnect=true&allowMultiQueries=true
+#      username: root
+#      password: root
+#      #初始化大小
+#      initial-size: 15
+#      min-idle: 15
+#      max-idle: 20
+#      max-active: 20
+#      #获取连接等待时间
+#      max-wait: 60000
+#      #检测的间隔时间
+#      time-between-eviction-runs-millis: 3600000
+#      #连接在连接池中的最小生存时间
+#      min-evictable-idle-time-millis: 300000
+#      validation-query: select 1 FROM DUAL
+#      test-while-idle: true
+#      test-on-borrow: false
+#      test-on-return: false
+#      #打开PSCache.并指定每个连接上PSCache的大小
+#      pool-prepared-statements: true
+#      max-pool-prepered-statement-per-connection-size: 20
+#      #配置监控统计拦截的filters，去掉后监控界面sql将无法统计，‘wall’用于防火墙
+#      filters: stat,wall,log4j2
+#      #connectionProperties属性打开mergeSql功能；慢sql记录
+#      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+#      #合并多个DruidDataSource的监控数据
+#      #useGlobalDataSourceStat=true
+
+  jpa:
+    database: mysql
+    show-sql: true
+    #关闭jpa外键生成
+    hibernate:
+      ddl-auto: update
+
+  jackson:
+    serialization: true
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    pool:
+      max-idle: 8
+      min-idle: 0
+      max-active: 8
+      max-wait: -1
+    timeout: 5000
+
+  session:
+    store-type: none
+
+#heepClient 配置
+httpClient:
+  config:
+    #最大连接数
+    maxTotal: 100
+    #并发数
+    defaultMaxPerRoute: 20
+    #创建连接的最长时间
+    connectTimeout: 1000
+    #从连接池中获取到连接的最长时间
+    connectionRequestTimeout: 500
+    #数据传输的最长时间
+    socketTimeout: 10000
+    #提交请求前测试连接是否可用
+    staleConnectionCheckEnabled: true
+    #连接重试次数
+    retryTime: 5
+
+
+#配置日志
+logging:
+  #配置日志文件路径
+  config: classpath:log4j2.xml
+
+
+
+
+
