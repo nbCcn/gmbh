@@ -35,8 +35,7 @@ public interface PathRepository extends BaseRepository<PlansPath, Long> {
             "sys_setups_tagline l," +
             "sys_plans_pathshop sp " +
             "WHERE " +
-            "s.id = st.shop_id and t.id = st.tagwarehouse_id and s.id = sp.shop_id and p.id = sp.path_id and l.id = p.tag_line_id and " +
-            "s.name LIKE %?1% ", nativeQuery = true)
+            "s.name LIKE %?1% and s.id = st.shop_id and t.id = st.tagwarehouse_id and s.id = sp.shop_id and p.id = sp.path_id and l.id = p.tag_line_id and s.status != 0 ", nativeQuery = true)
     List<Object[]> findByShopName(String name);
 
     @Query(value = "SELECT " +
@@ -116,7 +115,7 @@ public interface PathRepository extends BaseRepository<PlansPath, Long> {
             "(SELECT ss.id,st.name as tagwareHouseName,st.id as tagwareHouseId,ss.name,ss.code,ss.province,ss.city,ss.district,ss.address,ss.contact,ss.phone,ss.status,ss.lng,ss.lat " +
             "FROM sys_shops_shop ss,sys_setups_tagwarehouse st,sys_shops_shop_tag_warehouses sst " +
             "WHERE " +
-            "ss.id = sst.shop_id AND st.id = sst.tagwarehouse_id  AND ss.status != ?1) as idTable " +
+            "ss.id = sst.shop_id AND st.id = sst.tagwarehouse_id  AND ss.status != ?1 ) as idTable " +
             "WHERE " +
             "idTable.id NOT IN (SELECT " +
             "sh.id " +
@@ -137,7 +136,7 @@ public interface PathRepository extends BaseRepository<PlansPath, Long> {
             "sys_setups_tagline l," +
             "sys_plans_pathshop sp " +
             "WHERE " +
-            "s.id = st.shop_id and t.id = st.tagwarehouse_id and s.id = sp.shop_id and p.id = sp.path_id and l.id = p.tag_line_id and t.id = ?1 ", nativeQuery = true)
+            "s.id = st.shop_id and t.id = st.tagwarehouse_id and s.id = sp.shop_id and p.id = sp.path_id and l.id = p.tag_line_id and t.id = ?1 and s.status != 0 ", nativeQuery = true)
     List<Object[]> findAllInLineShopById(Long id);
 
     @Query(value = "SELECT  " +
@@ -150,7 +149,7 @@ public interface PathRepository extends BaseRepository<PlansPath, Long> {
             "sys_setups_tagwarehouse t," +
             "sys_shops_shop_tag_warehouses st " +
             "WHERE " +
-            "s.id = st.shop_id and t.id = st.tagwarehouse_id and t.id = ?1 ", nativeQuery = true)
+            "s.id = st.shop_id and t.id = st.tagwarehouse_id and t.id = ?1 and s.status != 0 ", nativeQuery = true)
     List<Object[]> findAllNotInLineShopById(Long id);
 
 
@@ -164,7 +163,7 @@ public interface PathRepository extends BaseRepository<PlansPath, Long> {
             "sys_setups_tagline l," +
             "sys_plans_pathshop sp " +
             "WHERE " +
-            "s.id = st.shop_id and t.id = st.tagwarehouse_id and s.id = sp.shop_id and p.id = sp.path_id and l.id = p.tag_line_id ", nativeQuery = true)
+            "s.id = st.shop_id and t.id = st.tagwarehouse_id and s.id = sp.shop_id and p.id = sp.path_id and l.id = p.tag_line_id and s.status != 0 ", nativeQuery = true)
     List<Object[]> findAllInLineShop();
 
     @Query(value = "SELECT  " +

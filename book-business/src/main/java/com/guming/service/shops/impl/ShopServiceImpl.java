@@ -39,6 +39,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -64,6 +66,7 @@ import java.util.*;
  * @Date: 2018/4/12 14:57
  */
 @Service
+@SuppressWarnings("all")
 public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
     @Autowired
@@ -90,7 +93,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     public ResponseParam findShops(ShopQuery shopDto) {
         Pageable pageable = new PageRequest(shopDto.getPage(), shopDto.getPageSize());
         Specification<ShopsShop> specification = new Specification<ShopsShop>() {
@@ -106,14 +109,8 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 if (shopDto.getStatus() != null) {
                     list.add(criteriaBuilder.equal(root.get("status").as(String.class), shopDto.getStatus()));
                 }
-                //库内Jointime有问题
-                //大于或等于传入时间
-                if (shopDto.getStartTime() != null) {
-                    list.add(criteriaBuilder.greaterThanOrEqualTo(root.get("joinedTime").as(Date.class), DateUtil.parseDate(shopDto.getStartTime())));
-                }
-                //小于或等于传入时间
-                if (shopDto.getEndTime() != null) {
-                    list.add(criteriaBuilder.lessThanOrEqualTo(root.get("joinedTime").as(Date.class), DateUtil.parseDate(shopDto.getEndTime())));
+                if (shopDto.getStartTime() != null && shopDto.getEndTime() != null) {
+                    list.add(criteriaBuilder.between(root.get("joinedTime"), DateUtil.parseDate(shopDto.getStartTime()), DateUtil.parseDate(shopDto.getEndTime())));
                 }
                 list.add(criteriaBuilder.equal(root.get("isDeleted").as(Integer.class), 0));
                 Predicate[] predicates = new Predicate[list.size()];
@@ -150,8 +147,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    @SuppressWarnings("all")
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam addShop(ShopAddDto addDto) {
         if (addDto.getTagwareHouseList().size() > 1) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_ID_EMPTY);
@@ -209,10 +205,14 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
         //新增用户
         List<ShopUserDto> userDtos = addDto.getUserDtos();
+        if (userDtos == null) {
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_USER_EXISTS);
+        }
         List<User> userList = new ArrayList<>();
+        User user;
         for (ShopUserDto shopUserDto : userDtos) {
             // 根据手机号查询用于，如果已有则关联
-            User user = userRepository.findUserByUserName(shopUserDto.getPhone());
+            user = userRepository.findUserByUserName(shopUserDto.getPhone());
             if (user != null) {
                 // 用户存在更新替换
                 user.setRoleList(null);
@@ -229,10 +229,8 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 userRepository.save(user);
 
             } else {
-
+                user = new User();
                 user.setUserName(shopUserDto.getPhone());
-                user.setPhone(shopUserDto.getPhone());
-                user.setFirstName(addDto.getContact());
                 user.setCreateTime(new Date());
                 user.setUpdateTime(new Date());
                 if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
@@ -265,18 +263,17 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> deleteShop(List<Long> ids) {
         if (ids == null && ids.isEmpty()) {
-            throw new ErrorMsgException(ErrorMsgConstants.ERR_VALIDATION_SHOP_CLASS_NOT_EXISTS_DELETE);
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_NOT_EXISTS_DELETE);
         }
         shopRepository.deleteByIds(ids);
         return getSuccessDeleteResult();
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    @SuppressWarnings("all")
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> updateShop(ShopUpdateDto updateDto) {
         if (updateDto.getId() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_ID_EMPTY);
@@ -286,9 +283,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         }
         ShopsShop shop = shopRepository.findOne(updateDto.getId());
         if (shop == null) {
-            throw new ErrorMsgException(ErrorMsgConstants.ERR_VALIDATION_SHOP_CLASS_NOT_EXISTS);
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_NOT_EXISTS);
         }
-        BeanUtils.copyProperties(updateDto, shop, new String[]{"joinedTime", "createdTime"});
+        BeanUtils.copyProperties(updateDto, shop, new String[]{"createdTime"});
         shop.setUpdatedTime(new Date());
         List<Long> tagwareHouseIds = updateDto.getTagwareHouseList();
         shop.setTagwareHouseSet(new HashSet<>());
@@ -307,57 +304,41 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
 
         List<ShopUserDto> userDtos = updateDto.getUserDtos();
+        if (userDtos == null) {
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_USER_NOT_EXISTS);
+        }
         List<User> userList = new ArrayList<>();
+        User user;
         for (ShopUserDto shopUserDto : userDtos) {
             if (shopUserDto.getUserId() == null) {
-                // 根据手机号查询用于，如果已有则关联
-                User user = userRepository.findUserByUserName(shopUserDto.getPhone());
-                if (user != null) {
-                    // 用户存在更新替换
-                    user.setRoleList(null);
-
-                    Role role = roleRepository.findOne(shopUserDto.getRoleId());
-                    if (role == null) {
-                        throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_EXISTS);
-                    }
-                    List<Role> roleList = new ArrayList<>();
-                    roleList.add(role);
-                    user.setRoleList(roleList);
-
-                    userList.add(user);
-                    userRepository.save(user);
-
-
+                user = new User();
+                user.setUserName(shopUserDto.getPhone());
+                user.setPhone(shopUserDto.getPhone());
+                user.setFirstName(updateDto.getContact());
+                user.setUpdateTime(new Date());
+                if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
+                    user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
                 } else {
-                    user = new User();
-                    user.setUserName(shopUserDto.getPhone());
-                    user.setPhone(shopUserDto.getPhone());
-                    user.setFirstName(updateDto.getContact());
-                    user.setUpdateTime(new Date());
-                    if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
-                        user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
-                    } else {
-                        user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
-                    }
-                    user.setIsStaff(false);
-                    user.setIsActive(shopUserDto.getIsActive());
-                    user.setIsSuperuser(false);
-
-                    Role role = roleRepository.findOne(shopUserDto.getRoleId());
-                    if (role == null) {
-                        throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_EXISTS);
-                    }
-                    List<Role> roleList = new ArrayList<>();
-                    roleList.add(role);
-                    user.setRoleList(roleList);
-
-                    userList.add(user);
-                    userRepository.save(user);
+                    user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
                 }
+                user.setIsStaff(false);
+                user.setIsActive(shopUserDto.getIsActive());
+                user.setIsSuperuser(false);
+
+                Role role = roleRepository.findOne(shopUserDto.getRoleId());
+                if (role == null) {
+                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_EXISTS);
+                }
+                List<Role> roleList = new ArrayList<>();
+                roleList.add(role);
+                user.setRoleList(roleList);
+
+                userList.add(user);
+                userRepository.save(user);
 
             } else {
                 Long userId = shopUserDto.getUserId();
-                User user = userRepository.findOne(userId);
+                user = userRepository.findOne(userId);
                 user.setUserName(shopUserDto.getPhone());
                 user.setPhone(shopUserDto.getPhone());
                 user.setFirstName(updateDto.getContact());
@@ -390,8 +371,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
 
     @Override
-    @Transactional(readOnly = true, rollbackFor = Exception.class)
-    @SuppressWarnings("all")
+    @Transactional(readOnly = true)
     public ResponseParam<?> findById(Long id) {
         if (id == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_ID_EMPTY);
@@ -424,7 +404,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         for (User user : userList) {
             ShopUserVo shopUserVo = new ShopUserVo();
             shopUserVo.setUserId(user.getId());
-            shopUserVo.setPhone(user.getPhone());
+            shopUserVo.setPhone(user.getUserName());
             shopUserVo.setUserPass(user.getUserPass());
             List<Role> roleList = user.getRoleList();
             for (Role role : roleList) {
@@ -543,6 +523,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ResponseParam<List<MapVo>> getShopTagrankList() {
         List<MapVo> mapVoList = new ArrayList<>();
         List<TagRank> tagRankList = tagRankRepository.findAll();
@@ -553,7 +534,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam resetPass(IdDto idDto) {
         if (idDto.getId() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_ID_EMPTY);
@@ -577,16 +558,20 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
      * @return
      */
 
+    private Logger logger = LoggerFactory.getLogger(ShopServiceImpl.class);
+
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> importShop(MultipartFile uploadFile) {
-        File uploadDir = new File("C:/Users/13136/Desktop/upload/");
+        File uploadDir = new File("/usr/local/book/upload/");
         //创建一个目录 （它的路径名由当前 File 对象指定，包括任一必须的父路径。）
         // 服务器路径  /usr/local/book/upload/
         // 本地路径   C:/Users/13136/Desktop/upload/
-        if (!uploadDir.exists()) uploadDir.mkdirs();
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
         //新建一个文件
-        File tempFile = new File("C:/Users/13136/Desktop/upload/" + System.currentTimeMillis() + ".xlsx");
+        File tempFile = new File("/usr/local/book/upload/" + System.currentTimeMillis() + ".xlsx");
         //初始化输入流
         InputStream is = null;
         try {
@@ -607,7 +592,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
             ExcelUtil<ExcelShopVo> excelUtil = new ExcelUtil<ExcelShopVo>(ExcelShopVo.class);
 
-            List<ExcelShopVo> shopSheet = excelUtil.importExcel("shopSheet", wb);
+            List<ExcelShopVo> shopSheet = excelUtil.importExcel("Sheet1", wb);
 
             //删除上传的临时文件
             if (tempFile.exists()) {
@@ -690,6 +675,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
             return getSuccessImportResult();
         } catch (Exception e) {
+            logger.error("", e);
             throw new ErrorMsgException(ErrorMsgConstants.SYSTEM_FAILED_MSG);
         } finally {
             if (is != null) {

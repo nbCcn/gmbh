@@ -45,10 +45,10 @@ public class ExcelShopVo {
     @ExcelVOAttribute(name = "*详细地址", column = "J")
     private String address;
 
-    @ExcelVOAttribute(name = "*纬度", column = "K")
+    @ExcelVOAttribute(name = "*经度", column = "K")
     private Double lng;
 
-    @ExcelVOAttribute(name = "*经度", column = "L")
+    @ExcelVOAttribute(name = "*纬度", column = "L")
     private Double lat;
 
     @ExcelVOAttribute(name = "*联系人", column = "M")

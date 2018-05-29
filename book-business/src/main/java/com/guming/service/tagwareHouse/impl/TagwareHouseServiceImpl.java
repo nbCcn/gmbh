@@ -34,6 +34,7 @@ import java.util.List;
  * @Date: 2018/4/17 16:00
  */
 @Service
+@SuppressWarnings("all")
 public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareHouseService {
 
     @Autowired
@@ -76,7 +77,7 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,rollbackFor = Exception.class)
     public ResponseParam<?> add(TagwareHouseAddDto tagwareHouseAddDto) {
         if (StringUtils.isEmpty(tagwareHouseAddDto.getName())) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_NAME_EMPTY);
@@ -94,7 +95,7 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,rollbackFor = Exception.class)
     public ResponseParam<?> update(TagwareHouseUpdateDto tagwareHouseUpdateDto) {
         if (tagwareHouseUpdateDto.getId() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_ID_EMPTY);

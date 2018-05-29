@@ -39,6 +39,7 @@ import java.util.List;
  * @Date: 2018/4/13 21:21
  */
 @Service
+@SuppressWarnings("all")
 public class TagRankServiceImpl extends BaseServiceImpl implements TagRankService {
 
     @Autowired
@@ -50,7 +51,7 @@ public class TagRankServiceImpl extends BaseServiceImpl implements TagRankServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,rollbackFor = Exception.class)
     public ResponseParam<?> addTagrank(TagRankAddDto tagRankAddDto) {
         if (tagRankAddDto.getName() == null || tagRankAddDto.getName().isEmpty()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SETUPSTAGRANK_CLASS_NAME_EMPTY);
@@ -71,7 +72,7 @@ public class TagRankServiceImpl extends BaseServiceImpl implements TagRankServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,rollbackFor = Exception.class)
     public ResponseParam<?> deleteTagrank(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SETUPSTAGRANK_CLASS_NOT_EXISTS_DELETE);
@@ -79,7 +80,7 @@ public class TagRankServiceImpl extends BaseServiceImpl implements TagRankServic
         for (Long id : ids) {
             TagRank tagRank = tagRankRepository.findOne(id);
             List<ShopsShop> shopsShop = tagRank.getShopsShop();
-            if (shopsShop != null) {
+            if (shopsShop.size() != 0) {
                 throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SETUPSTAGRANK_CLASS_SHOP_EXISTS);
             }
         }
@@ -88,7 +89,7 @@ public class TagRankServiceImpl extends BaseServiceImpl implements TagRankServic
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,rollbackFor = Exception.class)
     public ResponseParam<?> updateTagrank(TagRankUpdateDto tagRankUpdateDto) {
         if (tagRankUpdateDto.getId() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SETUPSTAGRANK_CLASS_ID_EMPTY);

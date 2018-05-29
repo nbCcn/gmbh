@@ -103,11 +103,12 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_SHOP_CLASS_STATUS_EMPTY = "err.validation.shop.class.status.empty";
     public static final String ERROR_VALIDATION_SHOP_CLASS_JOINEDTIME_EMPTY = "err.validation.shop.class.joinedtime.empty";
     public static final String ERROR_VALIDATION_SHOP_CLASS_NAME_EXISTS = "err.validation.shop.class.name.exists";
-    public static final String ERR_VALIDATION_SHOP_CLASS_NOT_EXISTS = "err.validation.shop.class.not.exists";
-    public static final String ERR_VALIDATION_SHOP_CLASS_NOT_EXISTS_DELETE = "err.validation.shop.class.not.exists.delete";
+    public static final String ERROR_VALIDATION_SHOP_CLASS_NOT_EXISTS = "err.validation.shop.class.not.exists";
+    public static final String ERROR_VALIDATION_SHOP_CLASS_NOT_EXISTS_DELETE = "err.validation.shop.class.not.exists.delete";
     public static final String ERROR_VALIDATION_SHOP_USER_NOT_MATCH = "err.validation.shop.user.not.match";
-
     public static final String ERROR_VALIDATION_SHOP_ID_EMPTY = "err.validation.shop.id.empty";
+    public static final String ERROR_VALIDATION_SHOP_CLASS_USER_EXISTS = "err.validation.shop.class.user.exists";
+    public static final String ERROR_VALIDATION_SHOP_CLASS_USER_NOT_EXISTS = "err.validation.shop.class.user.not.exists";
 
 
     public static final String ERR_VALIDATION_TAGLINE_CLASS_ID_EMPTY = "err.validation.tagline.class.id.empty";
@@ -186,7 +187,7 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_ARRANGEMENT_CLASS_DATE_EMPTY = "err.validation.arrangement.class.date.empty";
     public static final String ERROR_VALIDATION_ARRANGEMENT_CLASS_ID_EMPTY = "err.validation.arrangement.class.id.empty";
     public static final String ERROR_VALIDATION_ARRANGEMENT_CLASS_EMPTY = "err.validation.arrangement.class.empty";
-    public static final String ERROR_VALIDATION_ARRANGEMENT_TIME_INTERVAL_NOT_ACCORD  = "err.validation.arrangement.time.interval.not.accord ";
+    public static final String ERROR_VALIDATION_ARRANGEMENT_TIME_INTERVAL_NOT_ACCORD  = "err.validation.arrangement.time.interval.not.accord";
 
     //客户端登陆
     public static final String ERROR_VALIDATION_CLIENT_LOGIN_ERROR = "err.validation.client.login.error";

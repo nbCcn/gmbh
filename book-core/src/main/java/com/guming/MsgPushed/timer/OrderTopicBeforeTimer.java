@@ -1,4 +1,4 @@
-package com.guming.MsgPushed.timer;//package com.gumingnc.book.common.MsgPushed.timer;
+package com.guming.MsgPushed.timer;
 //
 //
 //import com.gm.mq.base.MessageBuilder;

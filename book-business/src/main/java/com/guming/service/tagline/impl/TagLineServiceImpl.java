@@ -44,6 +44,7 @@ import java.util.List;
  * @Date: 2018/4/20 10:45
  */
 @Service
+@SuppressWarnings("all")
 public class TagLineServiceImpl extends BaseServiceImpl implements TagLineService {
 
     @Autowired
@@ -61,7 +62,7 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public ResponseParam<?> find(TagLineQuery tagLineQuery) {
         Pageable pageable = new PageRequest(tagLineQuery.getPage(), tagLineQuery.getPageSize());
         Specification<TagLine> specification = new Specification<TagLine>() {
@@ -96,7 +97,7 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> add(TagLineAddDto tagLineAddDto) {
         if (tagLineAddDto.getName() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGLINE_CLASS_NAME_EMPTY);
@@ -126,7 +127,7 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam delete(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGLINE_CLASS_NOT_EXISTS_DELETE);
@@ -137,7 +138,7 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam update(TagLineUpdateDto tagLineUpdateDto) {
         if (tagLineUpdateDto.getId() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERR_VALIDATION_TAGLINE_CLASS_ID_EMPTY);
@@ -166,7 +167,7 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     public ResponseParam findById(Long id) {
         if (id == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERR_VALIDATION_TAGLINE_CLASS_ID_EMPTY);

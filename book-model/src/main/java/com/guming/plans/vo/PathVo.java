@@ -51,8 +51,12 @@ public class PathVo {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PathVo pathVo = (PathVo) o;
         return Objects.equals(tagwareHouseId, pathVo.tagwareHouseId) &&
                 Objects.equals(pathId, pathVo.pathId) &&

@@ -23,7 +23,7 @@ public interface ArrangementRepository extends BaseRepository<PlansArrangement, 
             "sys_setups_tagline st, " +
             "sys_setups_tagwarehouse sh " +
             "WHERE " +
-            "tableId.id = ap.arrangement_id and pp.id = ap.path_id and st.id = pp.tag_line_id and sh.id = ?3 and sh.id = st.tag_warehouse_id order by st.order_code desc ,st.id desc ", nativeQuery = true)
+            "tableId.id = ap.arrangement_id and pp.id = ap.path_id and st.id = pp.tag_line_id and sh.id = ?3 and sh.id = st.tag_warehouse_id order by st.order_code asc ,st.id asc ", nativeQuery = true)
     List<Object[]> find(Integer year, Integer month, Long tagwareHouseId);
 
     @Query(value = "DELETE FROM sys_plans_arrangement_paths WHERE arrangement_id = ?1 and  path_id = ?2 ", nativeQuery = true)
@@ -47,7 +47,6 @@ public interface ArrangementRepository extends BaseRepository<PlansArrangement, 
             "pa.id = pap.arrangement_id and pap.path_id = pp.id and pp.tag_line_id = st.id and  " +
             "YEAR(pa.day) = ?1 and MONTH(pa.day) = ?2 And ss.shop_id = ?3 order by pa.day asc ", nativeQuery = true)
     List<Object[]> findByShop(String yearStr, String monthStr, Long shopId);
-
 
     @Query(value = "select p from PlansArrangement p ,TagwareHouse t where p.day between ?1 and ?2 and t.id = ?3 ")
     List<PlansArrangement> findByDay(Date firstDay, Date lastDay, Long tagwareHouseId);

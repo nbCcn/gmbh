@@ -1,6 +1,7 @@
 
 package com.guming.service.arrangement.impl;
 
+
 import com.guming.arrangement.dto.ArrangementMoveDto;
 import com.guming.arrangement.dto.ArrangementReMoveDto;
 import com.guming.arrangement.dto.ShopArrangementQueryDto;
@@ -46,6 +47,7 @@ import java.util.*;
  */
 
 @Service
+@SuppressWarnings("all")
 public class ArrangementServiceImpl extends BaseServiceImpl implements ArrangementService {
 
     @Autowired
@@ -69,7 +71,7 @@ public class ArrangementServiceImpl extends BaseServiceImpl implements Arrangeme
      * @return
      */
     @Override
-    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     public ResponseParam find(ArrangementQueryDto arrangementQueryDto) {
         if (StringUtils.isEmpty(arrangementQueryDto.getDateStr())) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ARRANGEMENT_CLASS_DATE_EMPTY);
@@ -189,6 +191,7 @@ public class ArrangementServiceImpl extends BaseServiceImpl implements Arrangeme
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void export(String dayStr, Long tagwareHouseId, HttpServletResponse response) throws Exception {
         XSSFWorkbook wb = null;
         List<PlansArrangement> arrangementList = arrangementRepository.findByDay(DateUtil.parseDate(DateUtil.getFirstDay(dayStr)), DateUtil.parseDate(DateUtil.getLastDay(dayStr)), tagwareHouseId);
@@ -362,7 +365,6 @@ public class ArrangementServiceImpl extends BaseServiceImpl implements Arrangeme
         }
     }
 
-
     /**
      * 店铺查询送货安排
      *
@@ -370,7 +372,7 @@ public class ArrangementServiceImpl extends BaseServiceImpl implements Arrangeme
      * @return
      */
     @Override
-    @Transactional(readOnly = false,rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam findByShop(ShopArrangementQueryDto shopArrangementQueryDto) {
         try {
             String dayStr = shopArrangementQueryDto.getDayStr();
@@ -399,5 +401,6 @@ public class ArrangementServiceImpl extends BaseServiceImpl implements Arrangeme
         }
 
     }
+
 
 }

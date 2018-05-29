@@ -31,10 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +42,7 @@ import java.util.List;
  * @Date: 2018/4/24 11:19
  */
 @Service
+@SuppressWarnings("all")
 public class PathServiceImpl extends BaseServiceImpl implements PathService {
 
 
@@ -63,7 +61,7 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
     }
 
     @Override
-    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    @Transactional(readOnly = true)
     public ResponseParam<?> findLine(PathQuery pathQuery) {
         if (pathQuery.getTagwareHouseId() == 0) {
             List<PathVo> pathVoList = new ArrayList<>();
@@ -109,7 +107,6 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
      * @param pathQuery:ID path_ID
      * @return
      */
-    @SuppressWarnings("all")
     @Override
     @Transactional(readOnly = true)
     public ResponseParam<?> findShop(PathQuery pathQuery) {
@@ -150,7 +147,7 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
             }
             return ResponseParam.success(pathShopVoList);
         }
-        if (pathQuery.getPathId()!=null) {
+        if (pathQuery.getPathId() != null) {
             if (pathQuery.getPathId() == 0) {
                 List<Object[]> noTagLineShop = pathRepository.findNoTagLineShop(pathQuery.getTagwareHouseId(), ShopStatus.CLOSE.getCode(), pathQuery.getTagwareHouseId());
                 List<PathShopVo> pathShopVoList = new ArrayList<>();
@@ -194,8 +191,10 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
                 List<Pathshop> pathshopList = plansPath.getPathshopList();
                 List<ShopsShop> shopList = new ArrayList<>();
                 for (Pathshop pathshop : pathshopList) {
-                    ShopsShop shopsShop = pathshop.getShopsShop();
-                    shopList.add(shopsShop);
+                    if (pathshop.getShopsShop().getStatus() != 0) {
+                        ShopsShop shopsShop = pathshop.getShopsShop();
+                        shopList.add(shopsShop);
+                    }
                 }
                 List<PathShopVo> pathShopVoList = new ArrayList<>();
                 for (ShopsShop shop : shopList) {
@@ -216,7 +215,7 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
     }
 
     @Override
-    @Transactional(readOnly = false,rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> add(PathAddDto pathAddDto) {
         List<PathShopDto> pathShopDtos = pathAddDto.getPathShopDtos();
         for (PathShopDto pathShopDto : pathShopDtos) {
@@ -259,7 +258,7 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = true)
     public ResponseParam fuzzyFind(ShopFuzzyQuery shopFuzzyQuery) {
         Specification<ShopsShop> specification = new Specification<ShopsShop>() {
             @Override
@@ -268,6 +267,7 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
                 if (StringUtils.isNotBlank(shopFuzzyQuery.getShopName())) {
                     list.add(criteriaBuilder.like(root.get("name").as(String.class), "%" + shopFuzzyQuery.getShopName() + "%"));
                 }
+                list.add(criteriaBuilder.notEqual(root.get("status").as(Integer.class), 0));
                 Predicate[] predicates = new Predicate[list.size()];
                 return criteriaQuery.where(list.toArray(predicates)).getRestriction();
             }
@@ -365,10 +365,10 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
     /**
      * 导出
      *
-     * @param idDto
+     * @param tagwareHouseId
      */
-    @SuppressWarnings(value = "all")
     @Override
+    @Transactional(readOnly = true)
     public void export(Long tagwareHouseId, HttpServletResponse response) {
         List<PathExportVo> pathExportVoList = new ArrayList<>();
         if (tagwareHouseId != 0) {
