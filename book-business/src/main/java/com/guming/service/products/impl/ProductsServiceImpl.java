@@ -130,9 +130,9 @@ public class ProductsServiceImpl extends BaseServiceImpl implements ProductsServ
                 " left join sys_products_tagline pl on pl.product_id=p.id " +
                 "where 1=1 ");
         if (!StringUtils.isEmpty(productsQuery.getName())){
-            querySql.append(" and p.name like :name");
+            querySql.append(" and ( p.name like :name");
             queryMap.put("name","%"+productsQuery.getName()+"%");
-            querySql.append(" or p.code like :code");
+            querySql.append(" or p.code like :code ) ");
             queryMap.put("code","%"+productsQuery.getName()+"%");
         }
 

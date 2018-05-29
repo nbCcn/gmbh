@@ -68,16 +68,6 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
-        <!--lombok Gson-->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
 
         <!-- 文件上传 -->
         <dependency>

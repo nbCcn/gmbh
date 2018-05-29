@@ -4,13 +4,16 @@ import com.guming.products.entity.Products;
 import com.guming.shops.entitiy.ShopsShop;
 import com.guming.tagline.entity.TagLine;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_setups_tagwarehouse")
 public class TagwareHouse implements Serializable {

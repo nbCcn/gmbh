@@ -206,6 +206,30 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
     }
 
     @Override
+    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    public List<OrderSubmission> findExpireUnAuditOrder() {
+        return orderSubmissionRepository.findExpireUnAuditOrder(new Date(),OrderStatus.SUBMITTED.getCode());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteOrder(List<OrderSubmission> orderSubmissionList){
+        if (orderSubmissionList != null && !orderSubmissionList.isEmpty()){
+            List<OrderDelete> orderDeleteList = new ArrayList<>();
+            for (OrderSubmission orderSubmission : orderSubmissionList){
+                OrderDelete orderDelete = new OrderDelete();
+                BeanUtils.copyProperties(orderSubmission,orderDelete);
+                List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
+                List<OrderTemplatesDelete> orderTemplatesDeleteList = CovertUtil.copyList(orderTemplatesSubmissionList,OrderTemplatesDelete.class);
+                orderDelete.setOrderTemplatesDeleteList(orderTemplatesDeleteList);
+                orderDeleteList.add(orderDelete);
+            }
+            orderDeleteRepository.save(orderDeleteList);
+            orderSubmissionRepository.delete(orderSubmissionList);
+        }
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public String orderSubmit(Long orderId, Long sendShopId, User user){
         if (orderId == null){
@@ -512,8 +536,13 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
                 orderVo.setAddress(sendShop.getAddress());
             }
 
+            Integer status = orderSubmission.getStatus();
             //订单状态
-            orderVo.setStatusMapVo(new MapVo(orderSubmission.getStatus().longValue(), i18nHandler(OrderStatus.getOrderStatus(orderSubmission.getStatus()).getI18N())));
+            orderVo.setStatusMapVo(new MapVo(orderSubmission.getStatus().longValue(), i18nHandler(OrderStatus.getOrderStatus(status).getI18N())));
+            if (status.equals(OrderStatus.SUBMITTED.getCode())){
+                orderVo.setIsRevoke(true);
+            }
+
 
             //所属模板名
             Templates templates = orderSubmission.getTemplates();

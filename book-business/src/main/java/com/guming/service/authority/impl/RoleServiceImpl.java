@@ -12,6 +12,7 @@ import com.guming.common.base.vo.Pagination;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.base.vo.TreeVo;
 import com.guming.common.constants.ErrorMsgConstants;
+import com.guming.common.constants.RoleConstants;
 import com.guming.common.exceptions.ErrorMsgException;
 import com.guming.dao.authority.RoleRepository;
 import com.guming.service.authority.AuthorityService;
@@ -52,6 +53,8 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
     @Autowired
     private MenuService menuService;
 
+
+
     @Override
     protected BaseRepository getRepository() {
         return this.roleRepository;
@@ -70,7 +73,7 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
 
         Role role = new Role();
         BeanUtils.copyProperties(roleAddDto,role,"id");
-        role.setRoleLevel(2);
+        role.setRoleLevel(RoleConstants.ADMIN_ROLE);
         role.setCreateDate(new Date());
         role.setUpdateDate(new Date());
         role = roleRepository.save(role);
@@ -135,8 +138,8 @@ public class RoleServiceImpl extends BaseServiceImpl implements RoleService {
             for (Role role : roleList) {
                 RoleVo roleVo = new RoleVo();
                 BeanUtils.copyProperties(role, roleVo);
-                //角色等级为1是系统固有角色，无法删除通知前端
-                if (role.getRoleLevel().equals(1)){
+                //角色等级为1,2是系统固有角色，无法删除通知前端
+                if (role.getRoleLevel().equals(RoleConstants.SYSTEM_ROLE) || role.getRoleLevel().equals(RoleConstants.CLIENT_ROLE) ){
                     roleVo.setIsDelete(true);
                 }
                 result.add(roleVo);

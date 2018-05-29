@@ -6,6 +6,8 @@ import com.guming.orderTemplate.entity.TemplatesType;
 import com.guming.plans.entity.PlansPath;
 import com.guming.shops.entitiy.ShopsShop;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -18,7 +20,8 @@ import java.util.List;
  * @Description:
  * @Date: 2018/4/27
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_order_submission")
 @NamedEntityGraph(

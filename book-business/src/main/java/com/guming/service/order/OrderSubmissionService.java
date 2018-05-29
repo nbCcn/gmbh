@@ -92,4 +92,15 @@ public interface OrderSubmissionService extends BaseService {
      */
     OrderVo nextOrder(OrderAuditQuery orderAuditQuery);
 
+    /**
+     * 查询过了发货时间的未审核的订单
+     * @return
+     */
+    List<OrderSubmission> findExpireUnAuditOrder();
+
+    /**
+     * 删除订单
+     * @param orderSubmissionList
+     */
+    void deleteOrder(List<OrderSubmission> orderSubmissionList);
 }

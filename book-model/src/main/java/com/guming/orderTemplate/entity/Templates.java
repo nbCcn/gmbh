@@ -4,6 +4,8 @@ package com.guming.orderTemplate.entity;
 import com.guming.tagline.entity.TagLine;
 import com.guming.tagwareHouse.entity.TagwareHouse;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,7 +16,8 @@ import java.util.List;
  * @Description:
  * @Date: 2018/4/20
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_templates")
 @NamedEntityGraph(name = "templates.all",

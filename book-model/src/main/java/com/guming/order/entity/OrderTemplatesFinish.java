@@ -1,6 +1,8 @@
 package com.guming.order.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -10,7 +12,8 @@ import java.math.BigDecimal;
  * @Description:
  * @Date: 2018/4/27
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_order_templates_finish")
 public class OrderTemplatesFinish {

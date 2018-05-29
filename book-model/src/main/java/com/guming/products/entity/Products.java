@@ -6,6 +6,8 @@ import com.guming.tagline.entity.TagLine;
 import com.guming.tagrank.entity.TagRank;
 import com.guming.tagwareHouse.entity.TagwareHouse;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -17,7 +19,8 @@ import java.util.List;
  * @Description:
  * @Date: 2018/4/18
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_products")
 @NamedEntityGraph(

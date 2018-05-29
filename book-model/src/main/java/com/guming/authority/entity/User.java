@@ -3,6 +3,8 @@ package com.guming.authority.entity;
 import com.guming.common.base.entity.BaseEntity;
 import com.guming.shops.entitiy.ShopsShop;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +16,8 @@ import java.util.List;
  * @Description: 用户
  * @Date: 2018/4/11
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_user")
 @NamedEntityGraph(

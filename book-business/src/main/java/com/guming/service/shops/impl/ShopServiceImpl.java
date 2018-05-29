@@ -329,6 +329,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
 
 
                 } else {
+                    user = new User();
                     user.setUserName(shopUserDto.getPhone());
                     user.setPhone(shopUserDto.getPhone());
                     user.setFirstName(updateDto.getContact());

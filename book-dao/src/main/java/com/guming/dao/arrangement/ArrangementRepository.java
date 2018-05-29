@@ -38,14 +38,14 @@ public interface ArrangementRepository extends BaseRepository<PlansArrangement, 
 
 
     @Query(value = "SELECT pa.day,st.name,st.manager,st.phone FROM " +
-            "sys_shops_shop ss, " +
+            "sys_plans_pathshop ss, " +
             "sys_plans_arrangement pa, " +
             "sys_plans_arrangement_paths pap , " +
             "sys_plans_path pp, " +
             "sys_setups_tagline st " +
             "WHERE " +
             "pa.id = pap.arrangement_id and pap.path_id = pp.id and pp.tag_line_id = st.id and  " +
-            "YEAR(pa.day) = ?1 and MONTH(pa.day) = ?2 And ss.id = ?3 order by pa.day asc ", nativeQuery = true)
+            "YEAR(pa.day) = ?1 and MONTH(pa.day) = ?2 And ss.shop_id = ?3 order by pa.day asc ", nativeQuery = true)
     List<Object[]> findByShop(String yearStr, String monthStr, Long shopId);
 
 

@@ -39,4 +39,8 @@ public class YygLogger{
     public void error(String message) {
         logger.log(Level.ERROR,message);
     }
+
+    public void info(String message,Object ... var){
+        logger.info(message,var);
+    }
 }

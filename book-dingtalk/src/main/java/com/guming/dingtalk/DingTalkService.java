@@ -12,6 +12,7 @@ import com.guming.common.utils.EncryptUtils;
 import com.guming.common.utils.StringToListUtils;
 import com.guming.config.DingTalkConfig;
 import com.guming.config.HttpClientManagerFactory;
+import com.guming.dingtalk.request.personmsg.PersonMsgPush;
 import com.guming.dingtalk.response.DingJsapiResponseParam;
 import com.guming.dingtalk.response.DingTokenResponseParam;
 import com.guming.dingtalk.response.DingUserIdResponseParam;
@@ -250,7 +251,7 @@ public class DingTalkService {
      *
      * @throws Exception
      */
-    public void userMsgPush(String userIdsStr) throws Exception {
+    public void userMsgPush(String userIdsStr, PersonMsgPush personMsgPush) throws Exception {
 
         String access_token = this.getAccessToken();
 
@@ -263,7 +264,7 @@ public class DingTalkService {
         req.setToAllUser(false);
 
         // 发送消息体有待修改
-        req.setMsgcontentString("{\"message_url\": \"http://dingtalk.com\",\"head\": {\"bgcolor\": \"FFBBBBBB\",\"text\": \"头部标题\"},\"body\": {\"title\": \"正文标题\",\"form\": [{\"key\": \"姓名:\",\"value\": \"张三\"},{\"key\": \"爱好:\",\"value\": \"打球、听音乐\"}],\"rich\": {\"num\": \"15.6\",\"unit\": \"元\"},\"content\": \"测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试\",\"image\": \"@lADOADmaWMzazQKA\",\"file_count\": \"3\",\"author\": \"李四 \"}}");
+        req.setMsgcontentString(JSON.toJSONString(personMsgPush));
         CorpMessageCorpconversationAsyncsendResponse rsp = client.execute(req, access_token);
 
         System.out.println("------------------------------------");

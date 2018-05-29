@@ -4,6 +4,8 @@ package com.guming.arrangement.entity;
 
 import com.guming.plans.entity.PlansPath;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -14,7 +16,7 @@ import java.util.List;
  * @Description:
  * @Date: 2018/5/2 11:25
  */
-@Data
+@Getter@Setter
 @Entity
 @Table(name = "sys_plans_arrangement")
 public class PlansArrangement {

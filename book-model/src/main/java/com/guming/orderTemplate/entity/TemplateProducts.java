@@ -2,6 +2,8 @@ package com.guming.orderTemplate.entity;
 
 import com.guming.products.entity.Products;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -12,7 +14,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "sys_template_products")
-@Data
+@Getter
+@Setter
 public class TemplateProducts {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

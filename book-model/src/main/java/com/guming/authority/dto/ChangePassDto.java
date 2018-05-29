@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 public class ChangePassDto extends BaseDto {
 
-    @ApiModelProperty(value = "账户id",required = true)
+    @ApiModelProperty(value = "账户id")
     private Long id;
 
     @ApiModelProperty(value = "账户旧密码",required = true)

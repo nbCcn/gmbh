@@ -1,6 +1,8 @@
 package com.guming.authority.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -10,7 +12,8 @@ import java.util.Date;
  * @Description:
  * @Date: 2018/4/16
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_user_ding")
 public class UserDing {

@@ -1,6 +1,8 @@
 package com.guming.authority.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,7 +14,7 @@ import java.util.List;
  * @Description:
  * @Date: 2018/4/11
  */
-@Data
+@Getter@Setter
 @Entity
 @Table(name = "sys_role")
 public class Role implements Serializable {

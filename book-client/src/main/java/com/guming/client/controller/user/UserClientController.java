@@ -1,6 +1,7 @@
 package com.guming.client.controller.user;
 
 import com.guming.authority.dto.ChangePassDto;
+import com.guming.authority.entity.User;
 import com.guming.base.BaseController;
 import com.guming.common.base.service.BaseService;
 import com.guming.common.base.vo.ResponseParam;
@@ -45,6 +46,8 @@ public class UserClientController extends BaseController {
     @PostMapping("changePass")
     @ResponseBody
     public ResponseParam changePass(@RequestBody ChangePassDto changePassDto){
+        User user = getCurrentClientUser();
+        changePassDto.setId(user.getId());
         return userService.changePass(changePassDto);
     }
 

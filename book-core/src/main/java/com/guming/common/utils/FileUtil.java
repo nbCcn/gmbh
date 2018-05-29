@@ -2,6 +2,7 @@ package com.guming.common.utils;
 
 import com.guming.common.constants.ErrorMsgConstants;
 import com.guming.common.exceptions.ErrorMsgException;
+import com.guming.common.logger.YygLogger;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -18,9 +19,10 @@ import java.io.*;
  * @Description:
  * @Date: 2018/5/21
  */
-@Slf4j
 @PropertySource("classpath:book.properties")
 public class FileUtil {
+
+    private static YygLogger logger = new YygLogger(FileUtil.class);
 
     /**
      * 上传文件的最大尺寸
@@ -39,7 +41,7 @@ public class FileUtil {
         try {
             uploadFile(multipartFile.getInputStream(),multipartFile.getOriginalFilename(),multipartFile.getSize(),filePath);
         } catch (IOException e) {
-            log.error("",e);
+            logger.error("",e);
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_FILE_UPLOAD_FAILED);
         }
     }
@@ -72,7 +74,7 @@ public class FileUtil {
             while ((n = is.read(buffer, 0, buffer.length)) != -1) {
                 fos.write(buffer, 0, n);
             }
-            log.info("upload file {} success...", sourceFileName);
+            logger.info("upload file {} success...", sourceFileName);
         } finally {
             if (fos != null) {
                 fos.close();
@@ -100,7 +102,7 @@ public class FileUtil {
             headers.setContentDispositionFormData("attachment", targetFileName);
             return new ResponseEntity<byte[]>(bs, headers, HttpStatus.CREATED);
         } catch (UnsupportedEncodingException e) {
-            log.error("",e);
+            logger.error("",e);
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_FILE_DOWNLOAD_FAILED);
         }
     }

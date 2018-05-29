@@ -13,13 +13,11 @@ import com.guming.common.base.vo.TreeVo;
 import com.guming.common.constants.ErrorMsgConstants;
 import com.guming.common.constants.LoginConstants;
 import com.guming.common.constants.RedisCacheConstants;
+import com.guming.common.constants.RoleConstants;
 import com.guming.common.exceptions.ErrorMsgException;
 import com.guming.common.exceptions.InitialPasswordException;
 import com.guming.common.exceptions.LoginNotException;
-import com.guming.common.utils.CookieUtil;
-import com.guming.common.utils.EncryptUtils;
-import com.guming.common.utils.PBKDF2PasswordHasher;
-import com.guming.common.utils.SessionUtil;
+import com.guming.common.utils.*;
 import com.guming.config.BookConfig;
 import com.guming.dao.authority.UserDingRepository;
 import com.guming.dao.authority.UserRepository;
@@ -30,6 +28,7 @@ import com.guming.redis.RedisService;
 import com.guming.service.authority.AuthorityService;
 import com.guming.service.authority.LoginService;
 import com.guming.service.authority.MenuService;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +95,7 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam validateLogin(HttpServletRequest request, HttpServletResponse response, String tokenPassInfo) {
-        User user = logInValidation(request,tokenPassInfo,true);
+        User user = logInValidation(request,tokenPassInfo,true,false);
         //设置sessionId cookie
         try {
             String sessionId = SessionUtil.generateSessionId();
@@ -118,10 +117,12 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     /**
      * 验证登陆加密信息，验证成功返回用户信息
      * @param request
-     * @param tokenPassInfo
+     * @param tokenPassInfo          登录加密串
+     * @param isValidationInitPass  是否要验证初始密码
+     * @param isClient                是否是客户端
      * @return
      */
-    private User logInValidation(HttpServletRequest request, String tokenPassInfo, Boolean isValidationInitPass){
+    private User logInValidation(HttpServletRequest request, String tokenPassInfo, Boolean isValidationInitPass, Boolean isClient){
         //参数空判断
         if (StringUtils.isEmpty(tokenPassInfo)) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_LOGIN_INFO_EMPTY);
@@ -152,6 +153,26 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
         if (user.getIsActive() == null || !user.getIsActive()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NOT_ACTIVE);
         }
+        List<Role> roleList = user.getRoleList();
+        Integer clientRoleSize = 0;
+        if (roleList != null && !roleList.isEmpty()){
+            for (Role role : roleList){
+                if (role.getRoleLevel().equals(RoleConstants.CLIENT_ROLE)){
+                    clientRoleSize +=1;
+                }
+            }
+            //如果是客户端，判断是否有客户端角色
+            if(isClient){
+                if (clientRoleSize<1){
+                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_PASS);
+                }
+            }else {
+                if (roleList.size() == clientRoleSize) {
+                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_PASS);
+                }
+            }
+        }
+
         //如果是初始密码通知前台
         if (isValidationInitPass && tokenInfoDto.getUserPass().equals(bookConfig.getInitialPassword())){
             throw new InitialPasswordException();
@@ -295,7 +316,7 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam<String> loginClient(String tokenPassInfo, HttpServletRequest request, HttpServletResponse response) {
-        User user = logInValidation(request,tokenPassInfo,false);
+        User user = logInValidation(request,tokenPassInfo,false,true);
         userInfoClientCache(user,response);
         user = syncUserDing(user,request,response);
         return ResponseParam.success(user.getPhone());
@@ -368,6 +389,10 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
             //将用户信息存入缓存，过时时间与cookie一致
             UserAuthorityVo userAuthorityVo = new UserAuthorityVo();
             BeanUtils.copyProperties(user, userAuthorityVo);
+
+            List<Role> roleList = user.getRoleList();
+            List<RoleAuthorityVo> roleAuthorityVoList = CovertUtil.copyList(roleList,RoleAuthorityVo.class);
+            userAuthorityVo.setRoleAuthorityDtoList(roleAuthorityVoList);
             redisService.set(sessionId,userAuthorityVo,LoginConstants.LOGIN_COOKIE_EXPIRE.longValue());
         } catch (Exception e) {
             logger.error("", e);

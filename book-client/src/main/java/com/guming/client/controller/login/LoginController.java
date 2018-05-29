@@ -41,7 +41,6 @@ public class LoginController extends BaseController {
         return loginService.config(getRequest());
     }
 
-
     @ApiOperation(value = "获取钉钉配置参数")
     @ApiImplicitParam(name = "singleStringDto",value = "获取到的code",required = true,dataType = "SingleStringDto")
     @PostMapping("/validateLogin")
@@ -49,7 +48,6 @@ public class LoginController extends BaseController {
     public ResponseParam<String> validateLogin(@RequestBody SingleStringDto singleStringDto, HttpServletRequest request, HttpServletResponse response){
         return loginService.validateLoginForDingWithLogin(singleStringDto.getCode(),request,response);
     }
-
 
     /**
      *  获取登录token，防止csrf
@@ -76,6 +74,5 @@ public class LoginController extends BaseController {
     public ResponseParam loginOut(HttpServletRequest request, HttpServletResponse response){
         return loginService.loginOutClient(request,response);
     }
-
 
 }

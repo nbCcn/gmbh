@@ -14,6 +14,7 @@ import java.util.List;
 public class RoleAuthorityVo {
     private Long id;
     private String roleName;
+    private Integer roleLevel;
     private Byte isValid;
     private List<RoleMenu> roleMenuList;
 }

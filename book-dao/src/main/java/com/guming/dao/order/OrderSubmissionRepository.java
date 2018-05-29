@@ -27,4 +27,7 @@ public interface OrderSubmissionRepository extends BaseRepository<OrderSubmissio
 
     @Query("select o from OrderSubmission o where o.isValid=true and o.id=?1 and o.status=?2")
     OrderSubmission findByIdAndStatus(Long id, Integer status);
+
+    @Query("select o from  OrderSubmission o where o.sendTime < ?1 and o.status=?2")
+    List<OrderSubmission> findExpireUnAuditOrder(Date date,Integer status);
 }

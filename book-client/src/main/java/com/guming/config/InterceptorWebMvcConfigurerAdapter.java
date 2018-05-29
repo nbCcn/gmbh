@@ -1,6 +1,7 @@
 package com.guming.config;
 
 import com.guming.client.interceptor.ClientAuthInterceptor;
+import com.guming.client.interceptor.JurisdictionInterceptor;
 import com.guming.client.interceptor.MdcInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +23,10 @@ public class InterceptorWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter 
         return new MdcInterceptor();
     }
 
-//    @Bean
-//    public JurisdictionInterceptor jurisdictionInterceptor(){
-//        return new JurisdictionInterceptor();
-//    }
+    @Bean
+    public JurisdictionInterceptor jurisdictionInterceptor(){
+        return new JurisdictionInterceptor();
+    }
 
     @Bean
     public ClientAuthInterceptor clientAuthInterceptor(){
@@ -34,9 +35,9 @@ public class InterceptorWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter 
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(clientAuthInterceptor()).addPathPatterns("/client/**").excludePathPatterns("/client/login/**");
-//        registry.addInterceptor(jurisdictionInterceptor()).addPathPatterns("/**").excludePathPatterns("/login/**","/swagger-resources/**","/v2/**","/client/**");
-        registry.addInterceptor(mdcInterceptor()).addPathPatterns("/**").excludePathPatterns("/login/**","/swagger-resources/**","/v2/**");
+        registry.addInterceptor(clientAuthInterceptor()).addPathPatterns("/**").excludePathPatterns("/client/login/**");
+        registry.addInterceptor(jurisdictionInterceptor()).addPathPatterns("/**").excludePathPatterns("/client/login/**","/swagger-resources/**","/v2/**");
+        registry.addInterceptor(mdcInterceptor()).addPathPatterns("/**").excludePathPatterns("/client/login/**","/swagger-resources/**","/v2/**");
         super.addInterceptors(registry);
     }
 

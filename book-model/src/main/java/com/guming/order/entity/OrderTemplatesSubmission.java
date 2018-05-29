@@ -2,6 +2,8 @@ package com.guming.order.entity;
 
 import com.guming.products.entity.Products;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -10,7 +12,8 @@ import javax.persistence.*;
  * @Description:
  * @Date: 2018/4/27
  */
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "sys_order_templates_submission")
 @NamedEntityGraph(
