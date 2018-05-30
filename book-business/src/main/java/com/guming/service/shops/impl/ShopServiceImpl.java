@@ -307,6 +307,15 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         if (userDtos == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_USER_NOT_EXISTS);
         }
+
+        for (int i = 0; i < userDtos.size() - 1; i++) {
+            for (int j = userDtos.size() - 1; j > i; j--) {
+                if (userDtos.get(j).getPhone().equals(userDtos.get(i).getPhone())) {
+                    throw new ErrorMsgException("请不要添加重复账户");
+                }
+            }
+        }
+
         List<User> userList = new ArrayList<>();
         User user;
         for (ShopUserDto shopUserDto : userDtos) {
@@ -315,8 +324,6 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 if (user == null) {
                     user = new User();
                     user.setUserName(shopUserDto.getPhone());
-                    user.setPhone(shopUserDto.getPhone());
-                    user.setFirstName(updateDto.getContact());
                     user.setUpdateTime(new Date());
                     if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
                         user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
@@ -339,8 +346,6 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                     userRepository.save(user);
                 } else {
                     user.setUserName(shopUserDto.getPhone());
-                    user.setPhone(shopUserDto.getPhone());
-                    user.setFirstName(updateDto.getContact());
                     user.setUpdateTime(new Date());
                     if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
                         user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
@@ -368,8 +373,6 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 Long userId = shopUserDto.getUserId();
                 user = userRepository.findOne(userId);
                 user.setUserName(shopUserDto.getPhone());
-                user.setPhone(shopUserDto.getPhone());
-                user.setFirstName(updateDto.getContact());
                 user.setUpdateTime(new Date());
                 if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
                     user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
