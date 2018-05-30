@@ -311,30 +311,58 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         User user;
         for (ShopUserDto shopUserDto : userDtos) {
             if (shopUserDto.getUserId() == null) {
-                user = new User();
-                user.setUserName(shopUserDto.getPhone());
-                user.setPhone(shopUserDto.getPhone());
-                user.setFirstName(updateDto.getContact());
-                user.setUpdateTime(new Date());
-                if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
+                user = userRepository.findUserByUserName(shopUserDto.getPhone());
+                if (user == null) {
+                    user = new User();
+                    user.setUserName(shopUserDto.getPhone());
+                    user.setPhone(shopUserDto.getPhone());
+                    user.setFirstName(updateDto.getContact());
+                    user.setUpdateTime(new Date());
+                    if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
+                        user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
+                    } else {
+                        user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
+                    }
+                    user.setIsStaff(false);
+                    user.setIsActive(shopUserDto.getIsActive());
+                    user.setIsSuperuser(false);
+
+                    Role role = roleRepository.findOne(shopUserDto.getRoleId());
+                    if (role == null) {
+                        throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_EXISTS);
+                    }
+                    List<Role> roleList = new ArrayList<>();
+                    roleList.add(role);
+                    user.setRoleList(roleList);
+
+                    userList.add(user);
+                    userRepository.save(user);
                 } else {
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
-                }
-                user.setIsStaff(false);
-                user.setIsActive(shopUserDto.getIsActive());
-                user.setIsSuperuser(false);
+                    user.setUserName(shopUserDto.getPhone());
+                    user.setPhone(shopUserDto.getPhone());
+                    user.setFirstName(updateDto.getContact());
+                    user.setUpdateTime(new Date());
+                    if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
+                        user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
+                    } else {
+                        user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
+                    }
+                    user.setIsStaff(false);
+                    user.setIsActive(shopUserDto.getIsActive());
+                    user.setIsSuperuser(false);
 
-                Role role = roleRepository.findOne(shopUserDto.getRoleId());
-                if (role == null) {
-                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_EXISTS);
-                }
-                List<Role> roleList = new ArrayList<>();
-                roleList.add(role);
-                user.setRoleList(roleList);
+                    Role role = roleRepository.findOne(shopUserDto.getRoleId());
+                    if (role == null) {
+                        throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_EXISTS);
+                    }
+                    List<Role> roleList = new ArrayList<>();
+                    roleList.add(role);
+                    user.setRoleList(roleList);
 
-                userList.add(user);
-                userRepository.save(user);
+                    userList.add(user);
+                    userRepository.save(user);
+                }
+
 
             } else {
                 Long userId = shopUserDto.getUserId();
