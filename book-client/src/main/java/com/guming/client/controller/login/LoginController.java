@@ -13,8 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @Author: PengCheng
@@ -45,8 +44,8 @@ public class LoginController extends BaseController {
     @ApiImplicitParam(name = "singleStringDto",value = "获取到的code",required = true,dataType = "SingleStringDto")
     @PostMapping("/validateLogin")
     @ResponseBody
-    public ResponseParam<String> validateLogin(@RequestBody SingleStringDto singleStringDto, HttpServletRequest request, HttpServletResponse response){
-        return loginService.validateLoginForDingWithLogin(singleStringDto.getCode(),request,response);
+    public ResponseParam<String> validateLogin(@RequestBody SingleStringDto singleStringDto, HttpSession httpSession){
+        return loginService.validateLoginForDingWithLogin(singleStringDto.getCode(),httpSession);
     }
 
     /**
@@ -56,23 +55,23 @@ public class LoginController extends BaseController {
     @ApiImplicitParam(name = "loginDto",value = "只需要userName参数",required = true,dataType = "LoginDto")
     @PostMapping("/getClientToken")
     @ResponseBody
-    public ResponseParam<String> getToken(@RequestBody LoginDto loginDto, HttpServletRequest request){
-        return loginService.getToken(request,loginDto.getUserName());
+    public ResponseParam<String> getToken(@RequestBody LoginDto loginDto,HttpSession httpSession){
+        return loginService.getToken(httpSession,loginDto.getUserName());
     }
 
     @ApiOperation(value = "登录页登录")
     @ApiImplicitParam(name = "singleStringDto",value = "获取到的code",required = true,dataType = "SingleStringDto")
     @PostMapping("/validateClientLogin")
     @ResponseBody
-    public ResponseParam<String> login(@RequestBody LoginDto loginDto, HttpServletRequest request, HttpServletResponse response){
-        return loginService.loginClient(loginDto.getTokenPassInfo(),request,response);
+    public ResponseParam<String> login(@RequestBody LoginDto loginDto, HttpSession httpSession){
+        return loginService.loginClient(loginDto.getTokenPassInfo(),httpSession);
     }
 
     @ApiOperation(value = "退出登录")
     @PostMapping("/loginOutClient")
     @ResponseBody
-    public ResponseParam loginOut(HttpServletRequest request, HttpServletResponse response){
-        return loginService.loginOutClient(request,response);
+    public ResponseParam loginOut(HttpSession httpSession){
+        return loginService.loginOut(httpSession);
     }
 
 }

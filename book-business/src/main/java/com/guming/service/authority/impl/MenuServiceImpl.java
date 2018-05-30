@@ -7,7 +7,7 @@ import com.guming.common.base.repository.BaseRepository;
 import com.guming.common.base.service.BaseServiceImpl;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.base.vo.TreeVo;
-import com.guming.common.constants.LoginConstants;
+import com.guming.common.constants.SessionConstants;
 import com.guming.common.constants.RedisCacheConstants;
 import com.guming.common.constants.business.OperationType;
 import com.guming.common.utils.CookieUtil;
@@ -59,9 +59,8 @@ public class MenuServiceImpl extends BaseServiceImpl implements MenuService {
 
     @Override
     public ResponseParam<List<TreeVo>> findCurrentUserMenu(HttpServletRequest request, HttpServletResponse response){
-        String userFlag = CookieUtil.getCookieValue(request,LoginConstants.LOGIN_COOKIE_KEY);
         //在登录时，已将用户权限存入
-        List<TreeVo> treeVoList = (List<TreeVo>) redisService.get(userFlag+RedisCacheConstants.AUTHORITY_CACHE_KEY_SUFFIX);
+        List<TreeVo> treeVoList = (List<TreeVo>) request.getSession().getAttribute(SessionConstants.MENU_AUTH);
         return ResponseParam.success(treeVoList);
     }
 

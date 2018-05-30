@@ -144,6 +144,9 @@ spring:
   jackson:
     serialization: true
 
+  session:
+    store-type: none
+
   redis:
     host: 127.0.0.1
     port: 6379
@@ -153,9 +156,6 @@ spring:
       max-active: 8
       max-wait: -1
     timeout: 5000
-
-  session:
-    store-type: none
 
 #heepClient 配置
 httpClient:

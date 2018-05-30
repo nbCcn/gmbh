@@ -11,8 +11,7 @@ import com.guming.common.base.service.BaseServiceImpl;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.base.vo.TreeVo;
 import com.guming.common.constants.ErrorMsgConstants;
-import com.guming.common.constants.LoginConstants;
-import com.guming.common.constants.RedisCacheConstants;
+import com.guming.common.constants.SessionConstants;
 import com.guming.common.constants.RoleConstants;
 import com.guming.common.exceptions.ErrorMsgException;
 import com.guming.common.exceptions.InitialPasswordException;
@@ -28,7 +27,6 @@ import com.guming.redis.RedisService;
 import com.guming.service.authority.AuthorityService;
 import com.guming.service.authority.LoginService;
 import com.guming.service.authority.MenuService;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +34,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,9 +56,6 @@ import java.util.UUID;
 public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
 
     private Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
-
-    @Autowired
-    private RedisService redisService;
 
     @Autowired
     private UserRepository userRepository;
@@ -81,30 +81,25 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     @Override
-    public ResponseParam<String> getToken(HttpServletRequest request, String userName) {
+    public ResponseParam<String> getToken(HttpSession httpSession, String userName) {
         if (StringUtils.isEmpty(userName)) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_LOGIN_USERNAME_EMPTY);
         }
-        String cacheKey = request.getRemoteAddr() + "::" + userName;
         String result = (int) (Math.random() * 3000) + UUID.randomUUID().toString().replaceAll("-", "");
-        //2分钟后过期
-        redisService.set(cacheKey, result, LoginConstants.LOGIN_TOKEN_EXPIRE);
+
+        httpSession.setAttribute(SessionConstants.CSRF_TOKEN,result);
         return ResponseParam.success(result);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseParam validateLogin(HttpServletRequest request, HttpServletResponse response, String tokenPassInfo) {
-        User user = logInValidation(request,tokenPassInfo,true,false);
-        //设置sessionId cookie
+    public ResponseParam validateLogin(HttpSession httpSession, String tokenPassInfo) {
+        User user = logInValidation(httpSession,tokenPassInfo,true,false);
         try {
-            String sessionId = SessionUtil.generateSessionId();
-            CookieUtil.setCookie(LoginConstants.LOGIN_COOKIE_KEY, sessionId, null, LoginConstants.LOGIN_COOKIE_EXPIRE, response);
-            //将用户信息存入缓存，过时时间与cookie一致
-            userCacheHandler(sessionId, user, LoginConstants.LOGIN_COOKIE_EXPIRE.longValue());
-            //菜单权限信息存入缓存，过时时间与cookie一致
-            userAuthorityHandler(sessionId, user, LoginConstants.LOGIN_COOKIE_EXPIRE.longValue());
-
+            //将用户信息存入session
+            userSessionHandler(user,httpSession);
+            //菜单权限信息存入session，过时时间与用户信息一致
+            userMenuSessionHandler(user,httpSession);
             user.setLastLoginTime(new Date());
             userRepository.save(user);
         } catch (Exception e) {
@@ -116,13 +111,13 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
 
     /**
      * 验证登陆加密信息，验证成功返回用户信息
-     * @param request
+     * @param httpSession
      * @param tokenPassInfo          登录加密串
      * @param isValidationInitPass  是否要验证初始密码
      * @param isClient                是否是客户端
      * @return
      */
-    private User logInValidation(HttpServletRequest request, String tokenPassInfo, Boolean isValidationInitPass, Boolean isClient){
+    private User logInValidation(HttpSession httpSession, String tokenPassInfo, Boolean isValidationInitPass, Boolean isClient){
         //参数空判断
         if (StringUtils.isEmpty(tokenPassInfo)) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_LOGIN_INFO_EMPTY);
@@ -138,13 +133,13 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
 
         //token认证
         String userName = tokenInfoDto.getUserName();
-        String tokenCacheKey = request.getRemoteAddr() + "::" + userName;
-        String tokenCacheValue = (String) redisService.get(tokenCacheKey);
+
+        String tokenCacheValue = (String) httpSession.getAttribute(SessionConstants.CSRF_TOKEN);
         if (StringUtils.isEmpty(tokenCacheValue) || StringUtils.isEmpty(tokenInfoDto.getToken()) || !tokenCacheValue.equals(tokenInfoDto.getToken())) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TOKEN);
         }
         //token认证成功去除token缓存
-        redisService.remove(tokenCacheKey);
+        httpSession.removeAttribute(SessionConstants.CSRF_TOKEN);
 
         User user = userRepository.findUserByUserName(userName);
         if (user == null || !new PBKDF2PasswordHasher().checkPassword(tokenInfoDto.getUserPass(), user.getUserPass())) {
@@ -184,10 +179,9 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     /**
      * 通过角色组查询出权限组并存入缓存
      *
-     * @param sessionId cookie中的用户标志参数，用来生成缓存key
      * @param user      用户信息
      */
-    private void userAuthorityHandler(String sessionId, User user, Long expireTime) {
+    private void userMenuSessionHandler(User user, HttpSession httpSession) {
         List<TreeVo> treeVoList = new ArrayList<>();
         //超级管理员拥有所用权限
         if (user.getIsSuperuser()) {
@@ -203,16 +197,14 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
                 treeVoList = menuService.findMenuTreeForRoleGroup(roleIdList);
             }
         }
-        String cacheKey = sessionId + RedisCacheConstants.AUTHORITY_CACHE_KEY_SUFFIX;
-        redisService.set(cacheKey, treeVoList, expireTime);
+        httpSession.setAttribute(SessionConstants.MENU_AUTH,treeVoList);
     }
 
     /**
-     * 查询出用户信息并存入缓存
+     * 查询出用户信息并存入session
      * @param user
-     * @param cacheKey
      */
-    private void userCacheHandler(String cacheKey, User user, Long expireTime) {
+    private void userSessionHandler(User user,HttpSession httpSession) {
         UserAuthorityVo userAuthorityVo = new UserAuthorityVo();
         BeanUtils.copyProperties(user, userAuthorityVo);
         List<Role> roleSet = user.getRoleList();
@@ -226,33 +218,36 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
             }
         }
         userAuthorityVo.setRoleAuthorityDtoList(roleAuthorityVoList);
-        redisService.set(cacheKey, userAuthorityVo, expireTime);
+        httpSession.setAttribute(SessionConstants.LOGIN_SESSION_KEY,userAuthorityVo);
+
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        try {
+            CookieUtil.setCookie(SessionConstants.LOGIN_STATUS,"true","",SessionConstants.SESSION_EXPIRE,response);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("",e);
+        }
     }
 
     @Override
-    public ResponseParam loginOut(HttpServletRequest request, HttpServletResponse response) {
-        String userFlag = CookieUtil.getCookieValue(request, LoginConstants.LOGIN_COOKIE_KEY);
-        if (!StringUtils.isEmpty(userFlag)) {
-            //从缓存清除用户信息
-            redisService.remove(userFlag);
-            //从缓存清除权限信息
-            redisService.remove(userFlag + RedisCacheConstants.AUTHORITY_CACHE_KEY_SUFFIX);
-            //移除cookie
-            CookieUtil.deleteCookie(LoginConstants.LOGIN_COOKIE_KEY, request, response);
-        }
+    public ResponseParam loginOut(HttpSession httpSession) {
+        //登出时，清除用户登录信息
+        httpSession.removeAttribute(SessionConstants.LOGIN_SESSION_KEY);
+        httpSession.removeAttribute(SessionConstants.MENU_AUTH);
+        HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        CookieUtil.deleteCookie(SessionConstants.LOGIN_STATUS,request,response);
         return ResponseParam.success(null);
     }
 
     /**
      * 手机号关联插入模式钉钉免登登录
      * @param code
-     * @param request
-     * @param response
+     * @param httpSession
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseParam validateLoginForDing(String code, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseParam validateLoginForDing(String code, HttpSession httpSession) {
         DingUserInfoResponseParam dingUserInfoResponseParam = dingTalkService.getUserInfo(code);
         UserDing userDing = userDingRepository.findOneByDingUserAndDingId(dingUserInfoResponseParam.getUserid(),dingUserInfoResponseParam.getDingId());
 
@@ -289,19 +284,20 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
         user.setLastLoginTime(new Date());
         userRepository.save(user);
 
-        userInfoClientCache(user,response);
+        userSessionHandler(user,httpSession);
         return ResponseParam.success(null);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseParam<String> validateLoginForDingWithLogin(String code, HttpServletRequest request, HttpServletResponse response){
+    public ResponseParam<String> validateLoginForDingWithLogin(String code, HttpSession httpSession){
         DingUserInfoResponseParam dingUserInfoResponseParam = dingTalkService.getUserInfo(code);
         UserDing userDing = userDingRepository.findOneByDingUserAndDingId(dingUserInfoResponseParam.getUserid(),dingUserInfoResponseParam.getDingId());
         //如果通过钉钉查不到用户，则通知前台退出到登录页面
         if(userDing == null){
-            CookieUtil.setCookie(LoginConstants.DING_USER_COOKIE_KEY, dingUserInfoResponseParam.getUserid(), null, response);
+            //查到钉钉信息后将钉钉信息存入会话，用于登录.为防止session
+            httpSession.setAttribute(SessionConstants.DING_USER_SESSION_KEY, dingUserInfoResponseParam);
             throw new LoginNotException();
         }
         User user = userDing.getUser();
@@ -309,29 +305,28 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
         user.setLastLoginTime(new Date());
         userRepository.save(user);
 
-        userInfoClientCache(user,response);
+        userSessionHandler(user,httpSession);
         return ResponseParam.success(dingUserInfoResponseParam.getMobile());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseParam<String> loginClient(String tokenPassInfo, HttpServletRequest request, HttpServletResponse response) {
-        User user = logInValidation(request,tokenPassInfo,false,true);
-        userInfoClientCache(user,response);
-        user = syncUserDing(user,request,response);
+    public ResponseParam<String> loginClient(String tokenPassInfo, HttpSession httpSession) {
+        User user = logInValidation(httpSession,tokenPassInfo,false,true);
+        userSessionHandler(user,httpSession);
+        user = syncUserDing(user,httpSession);
         return ResponseParam.success(user.getPhone());
     }
 
     /**
      * 同步綁定釘釘信息
      * @param user      當前用戶
-     * @param request
+     * @param httpSession
      */
-    private User syncUserDing(User user, HttpServletRequest request, HttpServletResponse response) {
+    private User syncUserDing(User user, HttpSession httpSession) {
         //從cookie中獲取用戶釘釘userid
-        String dingUser = CookieUtil.getCookieValue(request,LoginConstants.DING_USER_COOKIE_KEY);
-        if(!StringUtils.isEmpty(dingUser)) {
-            DingUserInfoResponseParam dingUserInfoResponseParam = dingTalkService.getUserInfoByUserId(dingUser);
+        DingUserInfoResponseParam dingUserInfoResponseParam = (DingUserInfoResponseParam) httpSession.getAttribute(SessionConstants.DING_USER_SESSION_KEY);
+        if(dingUserInfoResponseParam != null) {
             UserDing userDing = userDingRepository.findOneByDingUserAndDingId(dingUserInfoResponseParam.getUserid(), dingUserInfoResponseParam.getDingId());
 
             if (userDing == null) {
@@ -358,47 +353,10 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
                 user.setLastLoginTime(new Date());
                 user = userRepository.save(user);
             }
-            CookieUtil.deleteCookie(LoginConstants.DING_USER_COOKIE_KEY, request, response);
+            httpSession.removeAttribute(SessionConstants.DING_USER_SESSION_KEY);
         }
         return user;
     }
-
-    @Override
-    public ResponseParam loginOutClient(HttpServletRequest request, HttpServletResponse response) {
-        String userFlag = CookieUtil.getCookieValue(request, LoginConstants.CLIENT_LOGIN_COOKIE_KEY);
-        if (!StringUtils.isEmpty(userFlag)) {
-            //从缓存清除用户信息
-            redisService.remove(userFlag);
-            //移除cookie
-            CookieUtil.deleteCookie(LoginConstants.CLIENT_LOGIN_COOKIE_KEY, request, response);
-        }
-        return ResponseParam.success(null);
-    }
-
-
-    /**
-     * 用户信息存入缓存
-     * @param user
-     * @param response
-     */
-    private void userInfoClientCache(User user,HttpServletResponse response){
-        //设置sessionId cookie
-        try {
-            String sessionId = SessionUtil.generateSessionId();
-            CookieUtil.setCookie(LoginConstants.CLIENT_LOGIN_COOKIE_KEY, sessionId, null, LoginConstants.LOGIN_COOKIE_EXPIRE, response);
-            //将用户信息存入缓存，过时时间与cookie一致
-            UserAuthorityVo userAuthorityVo = new UserAuthorityVo();
-            BeanUtils.copyProperties(user, userAuthorityVo);
-
-            List<Role> roleList = user.getRoleList();
-            List<RoleAuthorityVo> roleAuthorityVoList = CovertUtil.copyList(roleList,RoleAuthorityVo.class);
-            userAuthorityVo.setRoleAuthorityDtoList(roleAuthorityVoList);
-            redisService.set(sessionId,userAuthorityVo,LoginConstants.LOGIN_COOKIE_EXPIRE.longValue());
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-    }
-
 
     @Override
     public ResponseParam<DingSignVo> config(HttpServletRequest request) {

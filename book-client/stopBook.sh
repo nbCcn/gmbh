@@ -1,5 +1,5 @@
 TIME_STAMP=`date +%Y%m%d%H%M`
-PROJECTNAME=book
+PROJECTNAME=book_client
 USER=admin
 PASS=admin
 

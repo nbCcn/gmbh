@@ -6,7 +6,7 @@ import com.guming.common.base.vo.ResponseParam;
 import com.guming.dingtalk.vo.DingSignVo;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @Author: PengCheng
@@ -17,50 +17,50 @@ public interface LoginService extends BaseService {
 
     /**
      * 获取Token并缓存
-     * @param request
+     * @param httpSession
      * @param userName
      * @return
      */
-    ResponseParam<String> getToken(HttpServletRequest request, String userName);
+    ResponseParam<String> getToken(HttpSession httpSession, String userName);
 
     /**
      * 验证登陆
-     * @param request
-     * @param response
+     * @param httpSession
      * @param tokenPassInfo
      * @return
      */
-    ResponseParam validateLogin(HttpServletRequest request, HttpServletResponse response, String tokenPassInfo);
+    ResponseParam validateLogin(HttpSession httpSession, String tokenPassInfo);
 
     /**
      * 登出
-     * @param request
-     * @param response
+     * @param httpSession
      * @return
      */
-    ResponseParam loginOut(HttpServletRequest request, HttpServletResponse response);
+    ResponseParam loginOut(HttpSession httpSession);
 
     /**
      * 钉钉免登,首次登录手机号关联插入模式
      * @param code
-     * @param request
-     * @param response
+     * @param httpSession
      * @return
      */
-    ResponseParam validateLoginForDing(String code, HttpServletRequest request, HttpServletResponse response);
+    ResponseParam validateLoginForDing(String code, HttpSession httpSession);
 
     ResponseParam<DingSignVo> config(HttpServletRequest request);
 
     /**
      * 钉钉免登，首次登录跳转登录页面方式关联数据方式
      * @param code
-     * @param request
-     * @param response
+     * @param httpSession
      * @return
      */
-    ResponseParam validateLoginForDingWithLogin(String code, HttpServletRequest request, HttpServletResponse response);
+    ResponseParam validateLoginForDingWithLogin(String code, HttpSession httpSession);
 
-    ResponseParam loginClient(String tokenPassInfo, HttpServletRequest request, HttpServletResponse response);
-
-    ResponseParam loginOutClient(HttpServletRequest request, HttpServletResponse response);
+    /**
+     * 客户端登录
+     * @param tokenPassInfo
+     * @param httpSession
+     * @return
+     */
+    ResponseParam loginClient(String tokenPassInfo, HttpSession httpSession);
 }

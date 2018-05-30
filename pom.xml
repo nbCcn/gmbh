@@ -81,6 +81,12 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
 
+        <!--spring-session中包含redis-->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-client</artifactId>
@@ -125,22 +131,4 @@
             <version>1.0.1</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <target>${java.version}</target>
-                    <source>${java.version}</source>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
 </project>

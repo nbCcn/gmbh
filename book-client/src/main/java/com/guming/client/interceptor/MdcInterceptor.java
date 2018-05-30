@@ -1,12 +1,8 @@
 package com.guming.client.interceptor;
 
 import com.guming.authority.vo.UserAuthorityVo;
-import com.guming.common.constants.LoginConstants;
-import com.guming.common.utils.CookieUtil;
-import com.guming.redis.RedisService;
-import org.apache.commons.lang3.StringUtils;
+import com.guming.common.constants.SessionConstants;
 import org.apache.logging.log4j.ThreadContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,24 +21,16 @@ public class MdcInterceptor extends HandlerInterceptorAdapter {
 
     public final static String REQUEST_REQUEST_URI = "request_uri";
 
-    @Autowired
-    private RedisService redisService;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         ThreadContext.put(REQUEST_REQUEST_URI, request.getRemoteHost());
-        //訪問ip
-        String userToken = CookieUtil.getCookieValue(request,LoginConstants.LOGIN_COOKIE_KEY);
-        String userId = "";
-        String userName = "";
-        if (!StringUtils.isEmpty(userToken)) {
-            UserAuthorityVo userAuthorityVo = (UserAuthorityVo) redisService.get(userToken);
-            userId = userAuthorityVo.getId().toString();
-            userName = userAuthorityVo.getUserName();
-        }
 
-        ThreadContext.put(USER_KEY, userId);
-        ThreadContext.put(USER_NAME, userName);
+        UserAuthorityVo userAuthorityVo = (UserAuthorityVo) request.getSession().getAttribute(SessionConstants.LOGIN_SESSION_KEY);
+
+        if (userAuthorityVo != null) {
+            ThreadContext.put(USER_KEY, userAuthorityVo.getId().toString());
+            ThreadContext.put(USER_NAME, userAuthorityVo.getUserName());
+        }
         return super.preHandle(request, response, handler);
     }
 
