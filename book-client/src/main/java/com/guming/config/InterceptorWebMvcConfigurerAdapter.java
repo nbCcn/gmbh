@@ -1,6 +1,6 @@
 package com.guming.config;
 
-import com.guming.client.interceptor.ClientAuthInterceptor;
+import com.guming.client.interceptor.AuthInterceptor;
 import com.guming.client.interceptor.JurisdictionInterceptor;
 import com.guming.client.interceptor.MdcInterceptor;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +29,8 @@ public class InterceptorWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter 
     }
 
     @Bean
-    public ClientAuthInterceptor clientAuthInterceptor(){
-        return new ClientAuthInterceptor();
+    public AuthInterceptor clientAuthInterceptor(){
+        return new AuthInterceptor();
     }
 
     @Override

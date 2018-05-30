@@ -12,7 +12,7 @@ import java.util.Set;
  * @Date: 2018/4/12
  */
 @Api(value = "树信息结构")
-public class TreeVo {
+public class TreeVo extends BaseVo{
     @ApiModelProperty(value = "id")
     private String id;
 

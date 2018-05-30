@@ -37,8 +37,8 @@ public class UserClientController extends BaseController {
     @ApiOperation(value = "获取当前用户")
     @PostMapping("getCurrentUser")
     @ResponseBody
-    public ResponseParam<String> getCurrentUser(){
-        return ResponseParam.success(getCurrentClientUser().getUserName());
+    public ResponseParam<String> getCurrentUserMsg(){
+        return ResponseParam.success(getCurrentUser().getUserName());
     }
 
     @ApiOperation(value = "更改密码")
@@ -46,10 +46,8 @@ public class UserClientController extends BaseController {
     @PostMapping("changePass")
     @ResponseBody
     public ResponseParam changePass(@RequestBody ChangePassDto changePassDto){
-        User user = getCurrentClientUser();
+        User user = getCurrentUser();
         changePassDto.setId(user.getId());
         return userService.changePass(changePassDto);
     }
-
-
 }

@@ -1,6 +1,6 @@
 TIME_STAMP=`date +%Y%m%d%H%M`
-CODE_HOME=/usr/local/book 
-PROJECTNAME=book  
+CODE_HOME=/usr/local/book/server
+PROJECTNAME=book_server
 cd $CODE_HOME  
 pid=`ps -ef |grep $PROJECTNAME |grep -v "grep" |awk '{print $2}'`   
 if [ $pid ]; then  

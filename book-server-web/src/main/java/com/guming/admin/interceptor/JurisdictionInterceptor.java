@@ -4,14 +4,10 @@ import com.guming.authority.entity.RoleMenu;
 import com.guming.authority.vo.RoleAuthorityVo;
 import com.guming.authority.vo.UserAuthorityVo;
 import com.guming.common.annotation.MenuOperateAuthority;
-import com.guming.common.constants.LoginConstants;
+import com.guming.common.constants.SessionConstants;
 import com.guming.common.exceptions.AuthorityException;
-import com.guming.common.utils.CookieUtil;
-import com.guming.redis.RedisService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -28,9 +24,6 @@ public class JurisdictionInterceptor extends HandlerInterceptorAdapter {
 
     private Logger logger = LoggerFactory.getLogger(JurisdictionInterceptor.class);
 
-    @Autowired
-    private RedisService redisService;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         logger.info("========================权限处理开始==========================");
@@ -43,9 +36,8 @@ public class JurisdictionInterceptor extends HandlerInterceptorAdapter {
         String belongMenuCode = authority.belongMenuCode();
         Integer operateType = authority.operationType().getType();
 
-        String userFlag = CookieUtil.getCookieValue(request,LoginConstants.LOGIN_COOKIE_KEY);
-        if (!StringUtils.isEmpty(userFlag)) {
-            UserAuthorityVo userAuthorityVo = (UserAuthorityVo) redisService.get(userFlag);
+        UserAuthorityVo userAuthorityVo = (UserAuthorityVo) request.getSession().getAttribute(SessionConstants.LOGIN_SESSION_KEY);
+        if (userAuthorityVo!=null) {
             //超级管理员无需验证权限
             if (userAuthorityVo.getIsSuperuser()!=null && userAuthorityVo.getIsSuperuser()){
                 return true;

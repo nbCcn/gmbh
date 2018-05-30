@@ -47,7 +47,7 @@ public class OrderClientController extends BaseController {
     @PostMapping("getRecipientShop")
     @ResponseBody
     public ResponseParam<List<ShopVo>> getRecipientShop(@RequestBody RecopientDto recopientDto){
-        recopientDto.setUserId(getCurrentClientUser().getId());
+        recopientDto.setUserId(getCurrentUser().getId());
         return orderService.getRecipientShop(recopientDto);
     }
 
@@ -56,7 +56,7 @@ public class OrderClientController extends BaseController {
     @PostMapping("orderSubmit")
     @ResponseBody
     public ResponseParam orderSubmit(@RequestBody OrderStatusDto orderStatusDto){
-        return orderService.orderSubmit(orderStatusDto.getId(),orderStatusDto.getSendShopId(),getCurrentClientUser());
+        return orderService.orderSubmit(orderStatusDto.getId(),orderStatusDto.getSendShopId(),getCurrentUser());
     }
 
     @ApiOperation(value = "检测该模板是否在送货时间内和是否在此期间有已提交订单(该方法会生成初始的购物车数据)")

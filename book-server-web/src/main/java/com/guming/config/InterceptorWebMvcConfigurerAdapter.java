@@ -1,6 +1,6 @@
 package com.guming.config;
 
-import com.guming.admin.interceptor.AuthenticationInterceptor;
+import com.guming.admin.interceptor.AuthInterceptor;
 import com.guming.admin.interceptor.JurisdictionInterceptor;
 import com.guming.admin.interceptor.MdcInterceptor;
 import org.springframework.context.annotation.Bean;
@@ -24,8 +24,8 @@ public class InterceptorWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter 
     }
 
     @Bean
-    public AuthenticationInterceptor authenticationInterceptor(){
-        return new AuthenticationInterceptor();
+    public AuthInterceptor authInterceptor(){
+        return new AuthInterceptor();
     }
 
     @Bean
@@ -35,7 +35,7 @@ public class InterceptorWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter 
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authenticationInterceptor()).addPathPatterns("/**").excludePathPatterns("/login/**","/swagger-resources/**","/v2/**","/client/**");
+        registry.addInterceptor(authInterceptor()).addPathPatterns("/**").excludePathPatterns("/login/**","/swagger-resources/**","/v2/**","/client/**");
         registry.addInterceptor(jurisdictionInterceptor()).addPathPatterns("/**").excludePathPatterns("/login/**","/swagger-resources/**","/v2/**","/client/**");
         registry.addInterceptor(mdcInterceptor()).addPathPatterns("/**").excludePathPatterns("/login/**","/swagger-resources/**","/v2/**");
         super.addInterceptors(registry);

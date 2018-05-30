@@ -5,11 +5,9 @@ import com.guming.authority.vo.UserAuthorityVo;
 import com.guming.common.base.service.BaseService;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.constants.ErrorMsgConstants;
-import com.guming.common.constants.LoginConstants;
+import com.guming.common.constants.SessionConstants;
 import com.guming.common.exceptions.LoginNotException;
-import com.guming.common.utils.CookieUtil;
 import com.guming.dao.authority.UserRepository;
-import com.guming.redis.RedisService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -28,9 +26,6 @@ import javax.servlet.http.HttpServletRequest;
  * @Date: 2018/5/10
  */
 public abstract class BaseController {
-
-    @Autowired
-    private RedisService redisService;
 
     @Autowired
     private UserRepository userRepository;
@@ -76,27 +71,12 @@ public abstract class BaseController {
     }
 
     /**
-     * 获取当前服务端登录的用户
-     * @return
-     */
-    public User getCurrentServerUser(){
-        //从会话中获取当前用户信息
-        UserAuthorityVo userAuthorityVo = (UserAuthorityVo) redisService.get(CookieUtil.getCookieValue(getRequest(),LoginConstants.LOGIN_COOKIE_KEY));
-        //这里获取订单提交人数据，如果提交人在此期间被删除了，则强制退出
-        User user = userRepository.findUserById(userAuthorityVo.getId());
-        if (user == null){
-            throw new LoginNotException();
-        }
-        return user;
-    }
-
-    /**
      * 获取当前客户端登录的用户
      * @return
      */
-    public User getCurrentClientUser(){
+    public User getCurrentUser(){
         //从会话中获取当前用户信息
-        UserAuthorityVo userAuthorityVo = (UserAuthorityVo) redisService.get(CookieUtil.getCookieValue(getRequest(),LoginConstants.CLIENT_LOGIN_COOKIE_KEY));
+        UserAuthorityVo userAuthorityVo = (UserAuthorityVo) getRequest().getSession().getAttribute(SessionConstants.LOGIN_SESSION_KEY);
         //这里获取订单提交人数据，如果提交人在此期间被删除了，则强制退出
         User user = userRepository.findUserById(userAuthorityVo.getId());
         if (user == null){

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * @Author: PengCheng
@@ -29,8 +30,8 @@ public class LoginController {
     @ApiImplicitParam(name = "loginDto",value = "只需要tokenPassInfo参数",required = true,dataType = "LoginDto")
     @PostMapping("/validateLogin")
     @ResponseBody
-    public ResponseParam validateLogin(@RequestBody LoginDto loginDto, HttpServletRequest request, HttpServletResponse response){
-        return loginService.validateLogin(request,response,loginDto.getTokenPassInfo());
+    public ResponseParam validateLogin(@RequestBody LoginDto loginDto,HttpSession httpSession){
+        return loginService.validateLogin(httpSession,loginDto.getTokenPassInfo());
     }
 
     /**
@@ -40,14 +41,14 @@ public class LoginController {
     @ApiImplicitParam(name = "loginDto",value = "只需要userName参数",required = true,dataType = "LoginDto")
     @PostMapping("/getToken")
     @ResponseBody
-    public ResponseParam<String> getToken(@RequestBody LoginDto loginDto, HttpServletRequest request){
-        return loginService.getToken(request,loginDto.getUserName());
+    public ResponseParam<String> getToken(@RequestBody LoginDto loginDto, HttpSession httpSession){
+        return loginService.getToken(httpSession,loginDto.getUserName());
     }
 
     @ApiOperation(value = "退出登录")
     @PostMapping("/loginOut")
     @ResponseBody
-    public ResponseParam loginOut(HttpServletRequest request, HttpServletResponse response){
-        return loginService.loginOut(request,response);
+    public ResponseParam loginOut(HttpSession httpSession){
+        return loginService.loginOut(httpSession);
     }
 }

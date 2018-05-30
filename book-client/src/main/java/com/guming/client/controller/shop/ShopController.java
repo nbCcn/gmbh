@@ -36,8 +36,6 @@ public class ShopController extends BaseController {
     @PostMapping("/findCurrentUserShops")
     @ResponseBody
     public ResponseParam<List<ShopVo>> findCurrentUserShops(HttpServletRequest request) {
-        return shopService.findCurrentUserShops(getCurrentClientUser());
+        return shopService.findCurrentUserShops(getCurrentUser());
     }
-
-
 }
