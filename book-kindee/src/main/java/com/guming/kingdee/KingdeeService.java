@@ -135,7 +135,7 @@ public class KingdeeService {
 
 
         //推送失敗拋出異常，讓數據回滾
-        if (synOrderResponseParam.getError()!=null && !synOrderResponseParam.getError().equals(0)){
+        if (synOrderResponseParam!=null && synOrderResponseParam.getError()!=null && !synOrderResponseParam.getError().equals(0)){
             if (synOrderResponseParam.getErrCode()!=null && !synOrderResponseParam.getErrCode().equals(0)) {
                 if (synOrderResponseParam.getProductList() != null && !synOrderResponseParam.getProductList().isEmpty()) {
                     String kucunProducts = "";

@@ -47,9 +47,11 @@ public class OrderStatusTimer {
                 if (orderAuditing.getStatus().equals(OrderStatus.DELIVERED.getCode())){
                     orderAuditing.setStatus(OrderStatus.COMPLETE.getCode());
                     orderService.orderFinish(orderAuditing.getId());
-                }else if (orderAuditing.getStatus()!= null && orderAuditing.getSendTime()!= null && orderAuditing.getStatus().equals(OrderStatus.AUDITED.getCode()) && orderAuditing.getSendTime().equals(DateUtil.getCurrentStartDay()) ){
-                    orderAuditing.setStatus(OrderStatus.DELIVERED.getCode());
-                    orderAuditingRepository.save(orderAuditing);
+                }else if (orderAuditing.getStatus()!= null && orderAuditing.getSendTime()!= null){
+                    if (orderAuditing.getStatus().equals(OrderStatus.AUDITED.getCode()) && orderAuditing.getSendTime().getTime()<=DateUtil.getCurrentStartDay().getTime()) {
+                        orderAuditing.setStatus(OrderStatus.DELIVERED.getCode());
+                        orderAuditingRepository.save(orderAuditing);
+                    }
                 }
            }
         }
