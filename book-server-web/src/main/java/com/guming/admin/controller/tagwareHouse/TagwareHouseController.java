@@ -36,16 +36,24 @@ public class TagwareHouseController {
     @ApiOperation(value = "查询仓库")
     @ApiImplicitParam(name = "tagwareHouseDto", required = true, dataType = "TagwareHouseQuery")
     @PostMapping("/find")
-    @MenuOperateAuthority(belongMenuCode = "006004", operationType = OperationType.LOOK)
     public @ResponseBody
     ResponseParam<?> findTagwareHouse(@RequestBody TagwareHouseQuery tagwareHouseDto) {
+        return tagwareHouseService.find(tagwareHouseDto);
+    }
+
+    @ApiOperation(value = "查询仓库")
+    @ApiImplicitParam(name = "tagwareHouseDto", required = true, dataType = "TagwareHouseQuery")
+    @PostMapping("/findQuery")
+    @ResponseBody
+    @MenuOperateAuthority(belongMenuCode = "006003", operationType = OperationType.LOOK)
+    public ResponseParam<?> findTagwareHouseQuery(@RequestBody TagwareHouseQuery tagwareHouseDto) {
         return tagwareHouseService.find(tagwareHouseDto);
     }
 
     @ApiOperation(value = "新增仓库")
     @ApiImplicitParam(name = "tagwareHouseAddDto", required = true, dataType = "TagwareHouseAddDto")
     @PostMapping("/add")
-    @MenuOperateAuthority(belongMenuCode = "006004", operationType = OperationType.ADD)
+    @MenuOperateAuthority(belongMenuCode = "006003", operationType = OperationType.ADD)
     public @ResponseBody
     ResponseParam<?> addTagwareHouse(@RequestBody TagwareHouseAddDto tagwareHouseAddDto) {
         return tagwareHouseService.add(tagwareHouseAddDto);
@@ -54,7 +62,7 @@ public class TagwareHouseController {
     @ApiOperation(value = "更新仓库")
     @ApiImplicitParam(name = "tagwareHouseUpdateDto", required = true, dataType = "TagwareHouseUpdateDto")
     @PostMapping("/update")
-    @MenuOperateAuthority(belongMenuCode = "006004", operationType = OperationType.EDIT)
+    @MenuOperateAuthority(belongMenuCode = "006003", operationType = OperationType.EDIT)
     public @ResponseBody
     ResponseParam<?> updateTagwareHouse(@RequestBody TagwareHouseUpdateDto tagwareHouseUpdateDto) {
         return tagwareHouseService.update(tagwareHouseUpdateDto);
@@ -63,7 +71,7 @@ public class TagwareHouseController {
     @ApiOperation(value = "删除仓库")
     @ApiImplicitParam(name = "idsDto", required = true, dataType = "IdsDto")
     @PostMapping("/delete")
-    @MenuOperateAuthority(belongMenuCode = "006004", operationType = OperationType.DELETE)
+    @MenuOperateAuthority(belongMenuCode = "006003", operationType = OperationType.DELETE)
     public @ResponseBody
     ResponseParam<?> deleteTagwareHouse(@RequestBody IdsDto idsDto) {
         return tagwareHouseService.delete(idsDto.getIds());
@@ -72,7 +80,7 @@ public class TagwareHouseController {
     @ApiOperation(value = "查询仓库详情")
     @ApiImplicitParam(name = "idDto", required = true, dataType = "IdDto")
     @PostMapping("/edit")
-    @MenuOperateAuthority(belongMenuCode = "006004", operationType = OperationType.DELETE)
+    @MenuOperateAuthority(belongMenuCode = "006003", operationType = OperationType.LOOK)
     public @ResponseBody
     ResponseParam<?> editTagwareHouse(@RequestBody IdDto idDto) {
         return tagwareHouseService.findById(idDto.getId());

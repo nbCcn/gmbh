@@ -32,7 +32,6 @@ public class AuthorityController {
     @ApiOperation(value = "查询当前用户的菜单权限")
     @PostMapping("findCurrentUserMenu")
     @ResponseBody
-    @MenuOperateAuthority(belongMenuCode = "006002",operationType = OperationType.LOOK)
     public ResponseParam<List<TreeVo>> findCurrentUserMenu(HttpServletRequest request, HttpServletResponse response){
         return menuService.findCurrentUserMenu(request,response);
     }

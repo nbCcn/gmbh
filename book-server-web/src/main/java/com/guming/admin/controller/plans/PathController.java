@@ -32,7 +32,6 @@ public class PathController {
 
     @ApiOperation(value = "按照仓库查询路线")
     @ApiImplicitParam(name = "pathQuery", required = true, dataType = "PathQuery")
-    @MenuOperateAuthority(belongMenuCode = "004003", operationType = OperationType.LOOK)
     @PostMapping("/findTagLine")
     public @ResponseBody
     ResponseParam findTagLine(@RequestBody PathQuery pathQuery) {
@@ -41,7 +40,6 @@ public class PathController {
 
     @ApiOperation(value = "按照路线查询店铺")
     @ApiImplicitParam(name = "pathQuery", required = true, dataType = "PathQuery")
-    @MenuOperateAuthority(belongMenuCode = "004003", operationType = OperationType.LOOK)
     @PostMapping("/findShop")
     public @ResponseBody
     ResponseParam findShop(@RequestBody PathQuery pathQuery) {
@@ -50,7 +48,7 @@ public class PathController {
 
     @ApiOperation(value = "路线移动")
     @ApiImplicitParam(name = "pathAddDto", required = true, dataType = "PathAddDto")
-    @MenuOperateAuthority(belongMenuCode = "004003", operationType = OperationType.EDIT)
+    @MenuOperateAuthority(belongMenuCode = "002002", operationType = OperationType.EDIT)
     @PostMapping("/move")
     public @ResponseBody
     ResponseParam<?> add(@RequestBody PathAddDto pathAddDto) {
@@ -59,7 +57,7 @@ public class PathController {
 
     @ApiOperation(value = "店铺模糊搜索")
     @ApiImplicitParam(name = "shopFuzzyQuery", required = true, dataType = "ShopFuzzyQuery")
-    @MenuOperateAuthority(belongMenuCode = "004003", operationType = OperationType.LOOK)
+    @MenuOperateAuthority(belongMenuCode = "002002", operationType = OperationType.LOOK)
     @PostMapping("/fuzzyFind")
     public @ResponseBody
     ResponseParam fuzzyFind(@RequestBody ShopFuzzyQuery shopFuzzyQuery) {
@@ -68,7 +66,7 @@ public class PathController {
 
     @ApiOperation(value = "根据店铺名称搜索店铺")
     @ApiImplicitParam(name = "shopFuzzyQuery", required = true, dataType = "ShopFuzzyQuery")
-    @MenuOperateAuthority(belongMenuCode = "004003", operationType = OperationType.LOOK)
+    @MenuOperateAuthority(belongMenuCode = "002002", operationType = OperationType.LOOK)
     @PostMapping("/findShopByName")
     public @ResponseBody
     ResponseParam findShopByName(@RequestBody ShopFuzzyQuery shopFuzzyQuery) {
@@ -78,7 +76,7 @@ public class PathController {
 
     @ApiOperation(value = "路线规划导出")
     @ApiImplicitParam(name = "tagwareHouseId", required = true, dataType = "Long")
-    @MenuOperateAuthority(belongMenuCode = "004003", operationType = OperationType.EXPORT)
+    @MenuOperateAuthority(belongMenuCode = "002002", operationType = OperationType.EXPORT)
     @GetMapping("/export")
     public synchronized void exportPath(@RequestParam(value = "tagwareHouseId", required = false) Long tagwareHouseId, HttpServletResponse response) {
         pathService.export(tagwareHouseId,response);

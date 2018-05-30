@@ -30,9 +30,17 @@ public class TagRankController {
     @ApiOperation(value = "查询加盟等级")
     @ApiImplicitParam(name = "setupsTagrankDto", required = true, dataType = "TagRankQuery")
     @PostMapping("/find")
+    @ResponseBody
+    public ResponseParam<?> findTagrank(@RequestBody TagRankQuery setupsTagrankDto) {
+        return tagRankService.findTagrank(setupsTagrankDto);
+    }
+
+    @ApiOperation(value = "查询加盟等级")
+    @ApiImplicitParam(name = "setupsTagrankDto", required = true, dataType = "TagRankQuery")
+    @PostMapping("/findQuery")
     @MenuOperateAuthority(belongMenuCode = "005002", operationType = OperationType.LOOK)
-    public @ResponseBody
-    ResponseParam<?> findTagrank(@RequestBody TagRankQuery setupsTagrankDto) {
+    @ResponseBody
+    public ResponseParam<?> findTagrankQuery(@RequestBody TagRankQuery setupsTagrankDto) {
         return tagRankService.findTagrank(setupsTagrankDto);
     }
 

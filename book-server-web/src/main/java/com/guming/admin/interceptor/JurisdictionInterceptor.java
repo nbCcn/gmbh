@@ -6,6 +6,7 @@ import com.guming.authority.vo.UserAuthorityVo;
 import com.guming.common.annotation.MenuOperateAuthority;
 import com.guming.common.constants.SessionConstants;
 import com.guming.common.exceptions.AuthorityException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
@@ -48,8 +49,12 @@ public class JurisdictionInterceptor extends HandlerInterceptorAdapter {
             for (RoleAuthorityVo roleAuthorityVo:roleAuthorityVoList){
                 List<RoleMenu> roleMenuList = roleAuthorityVo.getRoleMenuList();
                 for (RoleMenu roleMenu:roleMenuList){
-                    if (roleMenu.getMenuCode().equals(belongMenuCode) && roleMenu.getMenuOperation().equals(operateType)){
-                        return true;
+                    if (roleMenu.getMenuCode().equals(belongMenuCode)){
+                        if (roleMenu.getMenuOperation()==null){
+                            continue;
+                        }else if (roleMenu.getMenuOperation().equals(operateType)){
+                            return true;
+                        }
                     }
                 }
             }

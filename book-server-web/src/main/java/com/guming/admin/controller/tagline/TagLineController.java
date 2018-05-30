@@ -34,9 +34,17 @@ public class TagLineController {
     @ApiOperation(value = "查询送货路线")
     @ApiImplicitParam(name = "tagLineQuery", required = true, dataType = "TagLineQuery")
     @PostMapping("/find")
+    @ResponseBody
+    public ResponseParam<?> find(@RequestBody TagLineQuery tagLineQuery) {
+        return tagLineService.find(tagLineQuery);
+    }
+
+    @ApiOperation(value = "查询送货路线")
+    @ApiImplicitParam(name = "tagLineQuery", required = true, dataType = "TagLineQuery")
+    @PostMapping("/findQuery")
     @MenuOperateAuthority(belongMenuCode = "002004", operationType = OperationType.LOOK)
-    public @ResponseBody
-    ResponseParam<?> find(@RequestBody TagLineQuery tagLineQuery) {
+    @ResponseBody
+    public ResponseParam<?> findQuery(@RequestBody TagLineQuery tagLineQuery) {
         return tagLineService.find(tagLineQuery);
     }
 
@@ -69,10 +77,9 @@ public class TagLineController {
 
     @ApiOperation(value = "通过仓库id查询仓库下的路线")
     @ApiImplicitParam(name = "tagLineQuery", required = true, dataType = "TagLineQuery")
-    @MenuOperateAuthority(belongMenuCode = "002004", operationType = OperationType.LOOK)
     @PostMapping("/findTagLingByWarehouseId")
-    public @ResponseBody
-    ResponseParam<List<MapVo>> findTagLingByWarehouseId(@RequestBody TagLineQuery tagLineQuery) {
+    @ResponseBody
+    public ResponseParam<List<MapVo>> findTagLingByWarehouseId(@RequestBody TagLineQuery tagLineQuery) {
         return tagLineService.findByWarehouseId(tagLineQuery.getTagwareHouseId());
     }
 
@@ -80,8 +87,8 @@ public class TagLineController {
     @ApiImplicitParam(name = "idDto", required = true, dataType = "IdDto")
     @MenuOperateAuthority(belongMenuCode = "002004", operationType = OperationType.LOOK)
     @PostMapping("/edit")
-    public @ResponseBody
-    ResponseParam<?> edit(@RequestBody IdDto idDto) {
+    @ResponseBody
+    public ResponseParam<?> edit(@RequestBody IdDto idDto) {
         return tagLineService.findById(idDto.getId());
     }
 
