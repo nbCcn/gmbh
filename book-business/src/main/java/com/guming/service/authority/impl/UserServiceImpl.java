@@ -16,6 +16,7 @@ import com.guming.common.constants.ErrorMsgConstants;
 import com.guming.common.constants.RegexConstants;
 import com.guming.common.exceptions.ErrorMsgException;
 import com.guming.common.utils.PBKDF2PasswordHasher;
+import com.guming.common.utils.RandomStringUtil;
 import com.guming.config.BookConfig;
 import com.guming.dao.authority.RoleRepository;
 import com.guming.dao.authority.UserRepository;
@@ -52,9 +53,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private BookConfig bookConfig;
-
     @Override
     protected BaseRepository getRepository() {
         return this.userRepository;
@@ -63,6 +61,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam updateUser(UserUpdateDto userUpdateDto) {
+        updateUserMsg(userUpdateDto);
+        return getSuccessUpdateResult();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public User updateUserMsg(UserUpdateDto userUpdateDto){
         if (userUpdateDto.getId()==null){
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_ID_EMPTY);
         }
@@ -86,13 +91,19 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         user.setUpdateTime(new Date());
 
         userRoleHandler(user,userUpdateDto.getRoleIds(),userUpdateDto.getIsSuperuser());
-        userRepository.save(user);
-        return getSuccessUpdateResult();
+        return userRepository.save(user);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam addUser(UserAddDto userAddDto) {
+        addUserMsg(userAddDto);
+        return getSuccessAddResult();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public User addUserMsg(UserAddDto userAddDto){
         //添加用户时无需再同步添加密码，默认取初始密码
         if (StringUtils.isEmpty(userAddDto.getUserName())){
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NAME_PASS_EMPTY);
@@ -103,14 +114,16 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
         User user = new User();
         BeanUtils.copyProperties(userAddDto,user);
-        user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
+        String initPass = RandomStringUtil.generateRandomString(12);
+        user.setInitPass(initPass);
+        user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
 
         userRoleHandler(user,userAddDto.getRoleIds(),userAddDto.getIsSuperuser());
-        userRepository.save(user);
-        return getSuccessAddResult();
+        return userRepository.save(user);
     }
+
 
     private void userRoleHandler(User user, List<Long> roleIds,Boolean isSuperUser){
         //超级用户无需配置角色
@@ -132,8 +145,13 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NOT_SELECT);
         }
         List<User> users =  userRepository.findAll(ids);
+
         if (users!=null && !users.isEmpty()){
             userRepository.delete(users);
+//            for(User user: users){
+//                Integer userShopSize = user.getShopsShops().size();
+//
+//            }
         }
         return getSuccessDeleteResult();
     }
@@ -239,6 +257,7 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
 
         user.setUserPass(new PBKDF2PasswordHasher().encode(changePassDto.getNewPass()));
+        user.setInitPass(null);
         user.setUpdateTime(new Date());
         userRepository.save(user);
         return getSuccessUpdateResult();

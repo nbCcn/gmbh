@@ -1,12 +1,17 @@
 package com.guming.client.controller.login;
 
+import com.guming.authority.dto.ChangePassDto;
 import com.guming.authority.dto.LoginDto;
+import com.guming.authority.entity.User;
 import com.guming.base.BaseController;
 import com.guming.common.base.dto.SingleStringDto;
 import com.guming.common.base.service.BaseService;
 import com.guming.common.base.vo.ResponseParam;
+import com.guming.common.constants.SessionConstants;
+import com.guming.dingtalk.response.DingUserInfoResponseParam;
 import com.guming.dingtalk.vo.DingSignVo;
 import com.guming.service.authority.LoginService;
+import com.guming.service.authority.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -28,6 +33,9 @@ public class LoginController extends BaseController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     public BaseService getService() {
         return this.loginService;
@@ -45,7 +53,7 @@ public class LoginController extends BaseController {
     @PostMapping("/validateLogin")
     @ResponseBody
     public ResponseParam<String> validateLogin(@RequestBody SingleStringDto singleStringDto, HttpSession httpSession){
-        return loginService.validateLoginForDingWithLogin(singleStringDto.getCode(),httpSession);
+        return loginService.validateLoginForDing(singleStringDto.getCode(),httpSession);
     }
 
     /**
@@ -72,6 +80,14 @@ public class LoginController extends BaseController {
     @ResponseBody
     public ResponseParam loginOut(HttpSession httpSession){
         return loginService.loginOut(httpSession);
+    }
+
+    @ApiOperation(value = "更改密码")
+    @ApiImplicitParam(name = "changePassDto",required = true,dataType = "ChangePassDto")
+    @PostMapping("changePass")
+    @ResponseBody
+    public ResponseParam changePass(@RequestBody ChangePassDto changePassDto,HttpSession httpSession){
+        return userService.changePass(changePassDto);
     }
 
 }

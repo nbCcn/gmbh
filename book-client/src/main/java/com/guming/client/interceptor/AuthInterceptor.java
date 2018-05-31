@@ -32,13 +32,14 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         UserAuthorityVo userAuthorityVo = (UserAuthorityVo) httpSession.getAttribute(SessionConstants.LOGIN_SESSION_KEY);
         if (userAuthorityVo !=null) {
             User user = userRepository.findUserById(userAuthorityVo.getId());
+
             //查看当前用户是否还存在，不存在则清除session
             if (user != null && user.getUserName().equals(userAuthorityVo.getUserName())) {
+                if (!user.getIsActive()){
+                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NOT_ACTIVE);
+                }
                 httpSession.setMaxInactiveInterval(SessionConstants.SESSION_EXPIRE);
                 return true;
-            }
-            if (!user.getIsActive()){
-                throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NOT_ACTIVE);
             }
         }
         httpSession.removeAttribute(SessionConstants.LOGIN_SESSION_KEY);
