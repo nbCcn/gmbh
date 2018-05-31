@@ -208,6 +208,15 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         if (userDtos == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_USER_EXISTS);
         }
+
+        for (int i = 0; i < userDtos.size() - 1; i++) {
+            for (int j = userDtos.size() - 1; j > i; j--) {
+                if (userDtos.get(j).getPhone().equals(userDtos.get(i).getPhone())) {
+                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_USER_IS_EXISTS);
+                }
+            }
+        }
+
         List<User> userList = new ArrayList<>();
         User user;
         for (ShopUserDto shopUserDto : userDtos) {
@@ -311,7 +320,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         for (int i = 0; i < userDtos.size() - 1; i++) {
             for (int j = userDtos.size() - 1; j > i; j--) {
                 if (userDtos.get(j).getPhone().equals(userDtos.get(i).getPhone())) {
-                    throw new ErrorMsgException("请不要添加重复账户");
+                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_USER_IS_EXISTS);
                 }
             }
         }

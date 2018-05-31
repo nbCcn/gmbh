@@ -20,8 +20,6 @@ public class ShopVo {
     private Long id;
     @ApiModelProperty(value = "店铺名称")
     private String name;
-    @ApiModelProperty(value = "店铺别名")
-    private String ename;
     @ApiModelProperty(value = "编码")
     private String code;
     @ApiModelProperty(value = "省")
@@ -101,14 +99,6 @@ public class ShopVo {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEname() {
-        return ename;
-    }
-
-    public void setEname(String ename) {
-        this.ename = ename;
     }
 
     public String getCode() {
