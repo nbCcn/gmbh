@@ -91,7 +91,7 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam validateLogin(HttpSession httpSession, String tokenPassInfo) {
-        User user = logInValidation(httpSession,tokenPassInfo,true,false);
+        User user = logInValidation(httpSession,tokenPassInfo,false,false);
         try {
             //将用户信息存入session
             userSessionHandler(user,httpSession);
@@ -290,7 +290,7 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam<String> loginClient(String tokenPassInfo, HttpSession httpSession) {
-        User user = logInValidation(httpSession,tokenPassInfo,true,true);
+        User user = logInValidation(httpSession,tokenPassInfo,false,true);
         userSessionHandler(user,httpSession);
         DingUserInfoResponseParam dingUserInfoResponseParam = (DingUserInfoResponseParam) httpSession.getAttribute(SessionConstants.DING_USER_SESSION_KEY);
         user = syncUserDing(user,dingUserInfoResponseParam);

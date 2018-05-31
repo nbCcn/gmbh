@@ -20,6 +20,7 @@ import com.guming.dingtalk.response.DingUserInfoResponseParam;
 import com.guming.dingtalk.vo.DingDepartmentVo;
 import com.guming.dingtalk.vo.DingSignVo;
 import com.guming.redis.RedisService;
+import com.taobao.api.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -251,26 +252,28 @@ public class DingTalkService {
      *
      * @throws Exception
      */
-    public void userMsgPush(String userIdsStr, PersonMsgPush personMsgPush) throws Exception {
-
+    public void userMsgPush(String userIdsStr, PersonMsgPush personMsgPush){
+        logger.dingtalk("-------------------钉钉用户推送-----------------");
         String access_token = this.getAccessToken();
 
         DingTalkClient client = new DefaultDingTalkClient(dingTalkConfig.getMsgUrl());
         CorpMessageCorpconversationAsyncsendRequest req = new CorpMessageCorpconversationAsyncsendRequest();
         req.setMsgtype("oa");
         req.setAgentId(Long.parseLong(dingTalkConfig.getAgentId()));
-        //req.setUseridList(userIdsStr);
-        req.setDeptIdList(userIdsStr);
+        req.setUseridList(userIdsStr);
         req.setToAllUser(false);
 
         // 发送消息体有待修改
         req.setMsgcontentString(JSON.toJSONString(personMsgPush));
-        CorpMessageCorpconversationAsyncsendResponse rsp = client.execute(req, access_token);
-
-        System.out.println("------------------------------------");
-        System.out.println(rsp.getBody());
-        System.out.println("------------------------------------");
-
+        CorpMessageCorpconversationAsyncsendResponse rsp = null;
+        try {
+            rsp = client.execute(req, access_token);
+        } catch (ApiException e) {
+            logger.error("",e);
+        }
+        logger.dingtalk("-------------------响应参数-----------------");
+        logger.dingtalk(rsp.getBody());
+        logger.dingtalk("------------------------------------");
     }
 
 

@@ -108,20 +108,24 @@ public class KingdeeService {
         syncOrderRequestParam.setOrderCode(orderSubmission.getCode());
         syncOrderRequestParam.setLogistics(orderSubmission.getPlansPath().getTagLine().getFtype());
 
-        List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
-        if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()){
-            List<InventoryProductRequestParam> inventoryProductRequestParamList = new ArrayList<>();
-            for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList){
-                if (orderSubmission.getIsValid()) {
-                    InventoryProductRequestParam inventoryProductRequestParam = new InventoryProductRequestParam();
-                    Products products = orderTemplatesSubmission.getProducts();
-                    inventoryProductRequestParam.setProductId(products.getId());
-                    inventoryProductRequestParam.setProductGid(products.getCode());
-                    inventoryProductRequestParam.setAmount(orderTemplatesSubmission.getAmount());
-                    inventoryProductRequestParamList.add(inventoryProductRequestParam);
+        if (orderSubmission.getIsValid()) {
+            List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
+            if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()) {
+                List<InventoryProductRequestParam> inventoryProductRequestParamList = new ArrayList<>();
+                for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList) {
+                    if (orderTemplatesSubmission.getIsValid()) {
+                        InventoryProductRequestParam inventoryProductRequestParam = new InventoryProductRequestParam();
+                        Products products = orderTemplatesSubmission.getProducts();
+                        inventoryProductRequestParam.setProductId(products.getId());
+                        inventoryProductRequestParam.setProductGid(products.getCode());
+                        inventoryProductRequestParam.setAmount(orderTemplatesSubmission.getAmount());
+                        inventoryProductRequestParamList.add(inventoryProductRequestParam);
+                    }
+                }
+                if (inventoryProductRequestParamList != null && !inventoryProductRequestParamList.isEmpty()) {
+                    syncOrderRequestParam.setInventoryProductRequestParamList(inventoryProductRequestParamList);
                 }
             }
-            syncOrderRequestParam.setInventoryProductRequestParamList(inventoryProductRequestParamList);
         }
 
         String requestParam = JSON.toJSONString(syncOrderRequestParam);

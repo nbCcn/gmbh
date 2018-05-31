@@ -2,6 +2,7 @@ package com.guming.service.order.impl;
 
 import com.guming.arrangement.entity.PlansArrangement;
 import com.guming.authority.entity.User;
+import com.guming.authority.entity.UserDing;
 import com.guming.common.base.repository.BaseRepository;
 import com.guming.common.base.service.BaseServiceImpl;
 import com.guming.common.base.vo.MapVo;
@@ -18,6 +19,8 @@ import com.guming.dao.order.OrderDeleteRepository;
 import com.guming.dao.order.OrderSubmissionRepository;
 import com.guming.dao.order.OrderTemplatesSubmissionRepository;
 import com.guming.dao.shops.ShopRepository;
+import com.guming.dingtalk.DingTalkService;
+import com.guming.dingtalk.request.personmsg.PersonMsgPush;
 import com.guming.kingdee.KingdeeService;
 import com.guming.kingdee.response.InventoryProductResponseParam;
 import com.guming.order.dto.query.OrderAuditQuery;
@@ -32,6 +35,7 @@ import com.guming.plans.entity.Pathshop;
 import com.guming.plans.entity.PlansPath;
 import com.guming.products.entity.Products;
 import com.guming.service.arrangement.ArrangementService;
+import com.guming.service.order.OrderAuditingService;
 import com.guming.service.order.OrderSubmissionService;
 import com.guming.service.shops.ShopService;
 import com.guming.shops.entitiy.ShopsShop;
@@ -85,6 +89,9 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     @Autowired
     private KingdeeService kingdeeService;
+
+    @Autowired
+    private DingTalkService dingTalkService;
 
     @Override
     protected BaseRepository getRepository() {
@@ -384,8 +391,11 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
         kingdeeService.syncOrder(orderSubmission);
 
         //审核订单后，数据移动
-        orderAuditingRepository.save(orderAuditing);
+        orderAuditing = orderAuditingRepository.save(orderAuditing);
         orderSubmissionRepository.delete(orderSubmission.getId());
+
+        //订单审核后钉钉通知
+        auditNotify(user,orderAuditing);
 
         //审核成功后返回订单id和status给前台做刷新展示
         if (nextOrderSubmission != null) {
@@ -395,6 +405,25 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
             return orderAuditingVo;
         }
         return null;
+    }
+
+    private void auditNotify(User user,OrderAuditing orderAuditing){
+        List<UserDing> userDingList = user.getUserDingList();
+        String userIdsStr = "";
+        if (userDingList != null && !userDingList.isEmpty()){
+            for (UserDing userDing : userDingList){
+                userIdsStr+=userDing.getDingUser()+",";
+            }
+            if (!StringUtils.isEmpty(userIdsStr)){
+                userIdsStr = userIdsStr.substring(0,userIdsStr.length()-1);
+
+                PersonMsgPush personMsgPush = new PersonMsgPush();
+
+                dingTalkService.userMsgPush(userIdsStr,personMsgPush);
+            }
+
+        }
+
     }
 
     @Override

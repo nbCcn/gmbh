@@ -14,6 +14,7 @@ import com.guming.common.utils.OrderUtil;
 import com.guming.dao.order.OrderSubmissionRepository;
 import com.guming.dao.orderTemplate.TemplatesRepository;
 import com.guming.dao.shops.ShopRepository;
+import com.guming.dingtalk.DingTalkService;
 import com.guming.kingdee.response.InventoryProductResponseParam;
 import com.guming.order.dto.OrderDto;
 import com.guming.order.dto.RecopientDto;

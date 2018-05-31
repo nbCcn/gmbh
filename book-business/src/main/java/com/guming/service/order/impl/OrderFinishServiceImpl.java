@@ -77,7 +77,9 @@ public class OrderFinishServiceImpl extends BaseServiceImpl implements OrderFini
 
                 predicates.add(criteriaBuilder.equal(root.get("isValid").as(Boolean.class),true));
 
-                predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class),orderQuery.getStatus()));
+                if (orderQuery.getStatus() != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class), orderQuery.getStatus()));
+                }
 
                 if (!StringUtils.isEmpty(orderQuery.getCode())){
                     predicates.add(criteriaBuilder.equal(root.get("code").as(String.class),orderQuery.getCode().trim()));
