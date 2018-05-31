@@ -11,10 +11,7 @@ import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.constants.ErrorMsgConstants;
 import com.guming.common.constants.business.ShopStatus;
 import com.guming.common.exceptions.ErrorMsgException;
-import com.guming.common.utils.CovertUtil;
-import com.guming.common.utils.DateUtil;
-import com.guming.common.utils.ExcelUtil;
-import com.guming.common.utils.PBKDF2PasswordHasher;
+import com.guming.common.utils.*;
 import com.guming.config.BookConfig;
 import com.guming.dao.authority.RoleRepository;
 import com.guming.dao.authority.UserRepository;
@@ -242,11 +239,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 user.setUserName(shopUserDto.getPhone());
                 user.setCreateTime(new Date());
                 user.setUpdateTime(new Date());
-                if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
-                } else {
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
-                }
+                String initPass = RandomStringUtil.generateRandomString(12);
+                user.setInitPass(initPass);
+                user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
                 user.setIsStaff(false);
                 user.setIsActive(shopUserDto.getIsActive());
                 user.setIsSuperuser(false);
@@ -334,11 +329,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                     user = new User();
                     user.setUserName(shopUserDto.getPhone());
                     user.setUpdateTime(new Date());
-                    if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
-                        user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
-                    } else {
-                        user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
-                    }
+                    String initPass = RandomStringUtil.generateRandomString(12);
+                    user.setInitPass(initPass);
+                    user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
                     user.setIsStaff(false);
                     user.setIsActive(shopUserDto.getIsActive());
                     user.setIsSuperuser(false);
@@ -356,11 +349,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 } else {
                     user.setUserName(shopUserDto.getPhone());
                     user.setUpdateTime(new Date());
-                    if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
-                        user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
-                    } else {
-                        user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
-                    }
+                    String initPass = RandomStringUtil.generateRandomString(12);
+                    user.setInitPass(initPass);
+                    user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
                     user.setIsStaff(false);
                     user.setIsActive(shopUserDto.getIsActive());
                     user.setIsSuperuser(false);
@@ -383,11 +374,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 user = userRepository.findOne(userId);
                 user.setUserName(shopUserDto.getPhone());
                 user.setUpdateTime(new Date());
-                if (StringUtils.isEmpty(shopUserDto.getUserPass())) {
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
-                } else {
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(shopUserDto.getUserPass()));
-                }
+                String initPass = RandomStringUtil.generateRandomString(12);
+                user.setInitPass(initPass);
+                user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
                 user.setIsStaff(false);
                 user.setIsActive(shopUserDto.getIsActive());
                 user.setIsSuperuser(false);
@@ -687,7 +676,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                     user.setUserName(username);
                     user.setCreateTime(new Date());
                     user.setUpdateTime(new Date());
-                    user.setUserPass(new PBKDF2PasswordHasher().encode(bookConfig.getInitialPassword()));
+                    String initPass = RandomStringUtil.generateRandomString(12);
+                    user.setInitPass(initPass);
+                    user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
                     user.setIsStaff(false);
                     user.setIsSuperuser(false);
                     user.setIsActive(true);
