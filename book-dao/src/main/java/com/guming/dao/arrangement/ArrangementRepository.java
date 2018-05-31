@@ -42,9 +42,11 @@ public interface ArrangementRepository extends BaseRepository<PlansArrangement, 
             "sys_plans_arrangement pa, " +
             "sys_plans_arrangement_paths pap , " +
             "sys_plans_path pp, " +
-            "sys_setups_tagline st " +
+            "sys_setups_tagline st, " +
+            "sys_setups_tagwarehouse sth ," +
+            "(SELECT tagwarehouse_id as id from sys_shops_shop_tag_warehouses WHERE shop_id = ?3) as tb1 " +
             "WHERE " +
-            "pa.id = pap.arrangement_id and pap.path_id = pp.id and pp.tag_line_id = st.id and  " +
+            "pa.id = pap.arrangement_id and pap.path_id = pp.id and pp.tag_line_id = st.id and  st.tag_warehouse_id = sth.id and tb1.id = sth.id and " +
             "YEAR(pa.day) = ?1 and MONTH(pa.day) = ?2 And ss.shop_id = ?3 order by pa.day asc ", nativeQuery = true)
     List<Object[]> findByShop(String yearStr, String monthStr, Long shopId);
 

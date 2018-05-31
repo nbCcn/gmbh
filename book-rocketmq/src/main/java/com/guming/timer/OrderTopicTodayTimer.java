@@ -5,6 +5,7 @@ import com.guming.base.MessageBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 
@@ -22,6 +23,7 @@ public class OrderTopicTodayTimer {
     @Autowired
     private MyDefaultMq myDefaultMq;
 
+    @Scheduled(cron = "0/5 * * * * ?")
     public void msgStatus() {
         log.info("==============================OrderTopicTodayTimer生产者启动================================");
 
