@@ -66,6 +66,7 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_USER_NOT_SELECT = "err.validation.user.not.select";
     public static final String ERROR_VALIDATION_USER_PASS_FORMAT_ERROR = "err.validation.user.pass.format.error";
     public static final String ERROR_VALIDATION_USER_USERNAME1_EMPTY = "err.validation.user.username1.empty";
+    public static final String ERROR_VALIDATION_USER_SHOP_EXISTS = "err.validation.user.shop.exists";
 
 
     //统一参数
@@ -205,6 +206,4 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_FILE_IMPORT_ROW_NOT_MATCH = "err.validation.file.import.row.not.match";
     public static final String ERROR_VALIDATION_FILE_IMPORT_FAILED = "err.validation.file.import.failed";
     public static final String ERROR_VALIDATION_FILE_EXPORT_FAILED = "err.validation.file.export.failed";
-
-
 }

@@ -146,12 +146,24 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         }
         List<User> users =  userRepository.findAll(ids);
 
+        List<User> deleteUserList = new ArrayList<>();
+        String unDeleteUser = "";
         if (users!=null && !users.isEmpty()){
-            userRepository.delete(users);
-//            for(User user: users){
-//                Integer userShopSize = user.getShopsShops().size();
-//
-//            }
+            for(User user: users){
+                Integer userShopSize = user.getShopsShops().size();
+                if (userShopSize >0){
+                    unDeleteUser += user.getUserName()+",";
+                }else{
+                    deleteUserList.add(user);
+                }
+            }
+            if (deleteUserList!=null && !deleteUserList.isEmpty()) {
+                userRepository.delete(deleteUserList);
+            }
+            if (!StringUtils.isEmpty(unDeleteUser)){
+                unDeleteUser = unDeleteUser.substring(0,unDeleteUser.length()-1);
+                return ResponseParam.error(ErrorMsgConstants.OPTION_FAILED_HELF_CODE,i18nHandler(ErrorMsgConstants.ERROR_VALIDATION_USER_SHOP_EXISTS,unDeleteUser));
+            }
         }
         return getSuccessDeleteResult();
     }

@@ -5,9 +5,11 @@ import com.guming.authority.dto.UserAddDto;
 import com.guming.authority.dto.UserUpdateDto;
 import com.guming.authority.dto.query.UserQuery;
 import com.guming.authority.vo.UserVo;
+import com.guming.base.BaseController;
 import com.guming.common.annotation.MenuOperateAuthority;
 import com.guming.common.base.dto.IdDto;
 import com.guming.common.base.dto.IdsDto;
+import com.guming.common.base.service.BaseService;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.constants.business.OperationType;
 import com.guming.service.authority.UserService;
@@ -27,7 +29,7 @@ import java.util.List;
 @Api(description = "用户",tags = "用户")
 @RestController
 @RequestMapping("user")
-public class UserController {
+public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
@@ -85,4 +87,17 @@ public class UserController {
         return userService.changePass(changePassDto);
     }
 
+    @ApiOperation(value = "更改当前用户密码",tags = "用户")
+    @ApiImplicitParam(name = "changePassDto",required = true,dataType = "ChangePassDto")
+    @PostMapping("changeCurrentPass")
+    @ResponseBody
+    public ResponseParam changeCurrentPass(@RequestBody ChangePassDto changePassDto){
+        changePassDto.setId(getCurrentUser().getId());
+        return userService.changePass(changePassDto);
+    }
+
+    @Override
+    public BaseService getService() {
+        return userService;
+    }
 }

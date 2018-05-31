@@ -90,13 +90,4 @@ public class ResponseParam<T> {
 	public static  <K> ResponseParam<K> error(int i, String msg) {
 		return new ResponseParam<K>(i,msg);
 	}
-
-	@Override
-	public String toString() {
-		return "ResponseParam{" +
-				"code=" + code +
-				", message='" + message + '\'' +
-				", result=" + result +
-				'}';
-	}
 }

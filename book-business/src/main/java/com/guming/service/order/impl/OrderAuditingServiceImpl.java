@@ -82,8 +82,9 @@ public class OrderAuditingServiceImpl extends BaseServiceImpl implements OrderAu
             public Predicate toPredicate(Root<OrderAuditing> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<Predicate>();
                 predicates.add(criteriaBuilder.equal(root.get("isValid").as(Boolean.class),true));
-                predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class),orderQuery.getStatus()));
-
+                if (orderQuery.getStatus() !=null) {
+                    predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class), orderQuery.getStatus()));
+                }
                 if (!StringUtils.isEmpty(orderQuery.getCode())){
                     predicates.add(criteriaBuilder.equal(root.get("code").as(String.class),orderQuery.getCode().trim()));
                 }

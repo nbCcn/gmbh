@@ -84,6 +84,6 @@ public class User extends BaseEntity {
     )
     private List<Role> roleList;
 
-    @ManyToMany(mappedBy = "userList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "userList", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     private List<ShopsShop> shopsShops;
 }
