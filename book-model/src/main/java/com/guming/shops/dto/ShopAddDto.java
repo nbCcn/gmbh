@@ -19,8 +19,6 @@ import java.util.Objects;
 public class ShopAddDto extends BaseDto {
     @ApiModelProperty(value = "店铺名称", required = true)
     private String name;
-    @ApiModelProperty(value = "店铺别名", required = true)
-    private String ename;
     @ApiModelProperty(value = "编码", required = true)
     private String code;
     @ApiModelProperty(value = "省", required = true)
@@ -70,7 +68,6 @@ public class ShopAddDto extends BaseDto {
     public String toString() {
         return "ShopAddDto{" +
                 "name='" + name + '\'' +
-                ", ename='" + ename + '\'' +
                 ", code='" + code + '\'' +
                 ", province='" + province + '\'' +
                 ", city='" + city + '\'' +
@@ -97,7 +94,6 @@ public class ShopAddDto extends BaseDto {
         }
         ShopAddDto that = (ShopAddDto) o;
         return Objects.equals(name, that.name) &&
-                Objects.equals(ename, that.ename) &&
                 Objects.equals(code, that.code) &&
                 Objects.equals(province, that.province) &&
                 Objects.equals(city, that.city) &&
@@ -116,7 +112,7 @@ public class ShopAddDto extends BaseDto {
     @Override
     public int hashCode() {
 
-        return Objects.hash(name, ename, code, province, city, district, address, lng, lat, contact, phone, status, joinedTime, joinedTimeStr, tagwareHouseList);
+        return Objects.hash(name, code, province, city, district, address, lng, lat, contact, phone, status, joinedTime, joinedTimeStr, tagwareHouseList);
     }
 
     public Integer getStatus() {
@@ -135,14 +131,6 @@ public class ShopAddDto extends BaseDto {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEname() {
-        return ename;
-    }
-
-    public void setEname(String ename) {
-        this.ename = ename;
     }
 
     public String getCode() {

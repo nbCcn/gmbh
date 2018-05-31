@@ -18,6 +18,7 @@
         <module>book-business</module>
         <module>book-dao</module>
         <module>book-client</module>
+        <module>book-rocketmq</module>
     </modules>
 
     <parent>
@@ -87,34 +88,6 @@
             <artifactId>spring-session</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.rocketmq</groupId>
-            <artifactId>rocketmq-client</artifactId>
-            <version>4.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-lang3</artifactId>
-                    <groupId>org.apache.commons</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>fastjson</artifactId>
-                    <groupId>com.alibaba</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j-slf4j-impl</artifactId>
-                    <groupId>org.apache.logging.log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j-core</artifactId>
-                    <groupId>org.apache.logging.log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!--lombok Gson-->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -124,11 +97,6 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>Gm.rocketMQ</groupId>
-            <artifactId>GmRmq</artifactId>
-            <version>1.0.1</version>
         </dependency>
     </dependencies>
 </project>

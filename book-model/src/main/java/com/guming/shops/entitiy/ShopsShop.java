@@ -23,7 +23,6 @@ import java.util.Set;
 public class ShopsShop implements Serializable {
     private Long id;
     private String name;
-    private String ename;
     private String code;
     private String province;
     private String city;
@@ -65,15 +64,6 @@ public class ShopsShop implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Column(name = "ename")
-    public String getEname() {
-        return ename;
-    }
-
-    public void setEname(String ename) {
-        this.ename = ename;
     }
 
     @Column(name = "code")
