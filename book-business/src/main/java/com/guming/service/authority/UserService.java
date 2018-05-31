@@ -5,6 +5,7 @@ import com.guming.authority.dto.ChangePassDto;
 import com.guming.authority.dto.UserAddDto;
 import com.guming.authority.dto.UserUpdateDto;
 import com.guming.authority.dto.query.UserQuery;
+import com.guming.authority.entity.User;
 import com.guming.common.base.service.BaseService;
 import com.guming.common.base.vo.ResponseParam;
 
@@ -27,4 +28,8 @@ public interface UserService extends BaseService {
     ResponseParam findById(Long id);
 
     ResponseParam changePass(ChangePassDto changePassDto);
+
+    User addUserMsg(UserAddDto userAddDto);
+
+    User updateUserMsg(UserUpdateDto userUpdateDto);
 }

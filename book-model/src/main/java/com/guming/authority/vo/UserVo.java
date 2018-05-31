@@ -62,6 +62,9 @@ public class UserVo {
     @ApiModelProperty(value = "用户联系电话")
     private String phone;
 
+    @ApiModelProperty(value = "用户初始密码")
+    private String initPass;
+
     public String getLastLoginTimeStr() {
         if(this.lastLoginTime != null){
             this.lastLoginTimeStr = DateUtil.formatDatetime(this.lastLoginTime);

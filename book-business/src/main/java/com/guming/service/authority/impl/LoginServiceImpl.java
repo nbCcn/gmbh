@@ -23,7 +23,6 @@ import com.guming.dao.authority.UserRepository;
 import com.guming.dingtalk.DingTalkService;
 import com.guming.dingtalk.response.DingUserInfoResponseParam;
 import com.guming.dingtalk.vo.DingSignVo;
-import com.guming.redis.RedisService;
 import com.guming.service.authority.AuthorityService;
 import com.guming.service.authority.LoginService;
 import com.guming.service.authority.MenuService;
@@ -37,11 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -221,11 +218,7 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
         httpSession.setAttribute(SessionConstants.LOGIN_SESSION_KEY,userAuthorityVo);
 
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
-        try {
-            CookieUtil.setCookie(SessionConstants.LOGIN_STATUS,"true","",SessionConstants.SESSION_EXPIRE,response);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("",e);
-        }
+        CookieUtil.setCookie(SessionConstants.LOGIN_STATUS,"true","",response);
     }
 
     @Override
@@ -247,45 +240,30 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseParam validateLoginForDing(String code, HttpSession httpSession) {
+    public ResponseParam<String> validateLoginForDing(String code, HttpSession httpSession) {
         DingUserInfoResponseParam dingUserInfoResponseParam = dingTalkService.getUserInfo(code);
         UserDing userDing = userDingRepository.findOneByDingUserAndDingId(dingUserInfoResponseParam.getUserid(),dingUserInfoResponseParam.getDingId());
 
         User user = null;
-
         //当通过钉钉查不到信息时，代表后台账号与钉钉并未关联.通过手机号查询出账号，并将两者关联
         if (userDing == null){
             user = userRepository.findUserByUserName(dingUserInfoResponseParam.getMobile());
             if (user == null){
                 throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_CLIENT_LOGIN_ERROR);
             }
-            user.setJoinedTime(new Date());
-            user.setIsStaff(false);
-            user.setUpdateTime(new Date());
-            user.setFirstName(dingUserInfoResponseParam.getName());
-
-            List<UserDing> userDingList = user.getUserDingList();
-
-            if (userDingList == null){
-                userDingList = new ArrayList<>();
-            }
-            userDing = new UserDing();
-            userDing.setCreateTime(new Date());
-            userDing.setUpdateTime(new Date());
-            userDing.setDingId(dingUserInfoResponseParam.getDingId());
-            userDing.setDingUser(dingUserInfoResponseParam.getUserid());
-            userDingList.add(userDing);
-
-            user.setUserDingList(userDingList);
+            syncUserDing(user,dingUserInfoResponseParam);
         }else{
             user = userDing.getUser();
+            if (user == null){
+                throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_CLIENT_LOGIN_ERROR);
+            }
         }
         //更新登陆时间
         user.setLastLoginTime(new Date());
         userRepository.save(user);
 
         userSessionHandler(user,httpSession);
-        return ResponseParam.success(null);
+        return ResponseParam.success(dingUserInfoResponseParam.getMobile());
     }
 
 
@@ -312,20 +290,21 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResponseParam<String> loginClient(String tokenPassInfo, HttpSession httpSession) {
-        User user = logInValidation(httpSession,tokenPassInfo,false,true);
+        User user = logInValidation(httpSession,tokenPassInfo,true,true);
         userSessionHandler(user,httpSession);
-        user = syncUserDing(user,httpSession);
+        DingUserInfoResponseParam dingUserInfoResponseParam = (DingUserInfoResponseParam) httpSession.getAttribute(SessionConstants.DING_USER_SESSION_KEY);
+        user = syncUserDing(user,dingUserInfoResponseParam);
+        httpSession.removeAttribute(SessionConstants.DING_USER_SESSION_KEY);
         return ResponseParam.success(user.getPhone());
     }
 
     /**
      * 同步綁定釘釘信息
      * @param user      當前用戶
-     * @param httpSession
+     * @param dingUserInfoResponseParam 用户钉钉信息
      */
-    private User syncUserDing(User user, HttpSession httpSession) {
+    private User syncUserDing(User user, DingUserInfoResponseParam dingUserInfoResponseParam) {
         //從cookie中獲取用戶釘釘userid
-        DingUserInfoResponseParam dingUserInfoResponseParam = (DingUserInfoResponseParam) httpSession.getAttribute(SessionConstants.DING_USER_SESSION_KEY);
         if(dingUserInfoResponseParam != null) {
             UserDing userDing = userDingRepository.findOneByDingUserAndDingId(dingUserInfoResponseParam.getUserid(), dingUserInfoResponseParam.getDingId());
 
@@ -353,7 +332,6 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
                 user.setLastLoginTime(new Date());
                 user = userRepository.save(user);
             }
-            httpSession.removeAttribute(SessionConstants.DING_USER_SESSION_KEY);
         }
         return user;
     }

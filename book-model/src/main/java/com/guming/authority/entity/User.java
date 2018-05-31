@@ -70,6 +70,9 @@ public class User extends BaseEntity {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "init_pass")
+    private String initPass;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE},mappedBy = "user",orphanRemoval = true)
     private List<UserDing> userDingList;
 
@@ -81,6 +84,6 @@ public class User extends BaseEntity {
     )
     private List<Role> roleList;
 
-    @ManyToMany(mappedBy = "userList", fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @ManyToMany(mappedBy = "userList", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ShopsShop> shopsShops;
 }
