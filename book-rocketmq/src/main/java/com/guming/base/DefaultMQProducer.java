@@ -1,6 +1,7 @@
 package com.guming.base;
 
 import com.guming.annotation.MQProducer;
+import com.guming.base.AbstractMQProducer;
 import org.springframework.stereotype.Component;
 
 /**

@@ -97,9 +97,6 @@ spring:
     trace-enabled: true
     vip-channel-enabled: false
 
-  jackson:
-    serialization: true
-
   session:
     store-type: none
 

@@ -25,22 +25,22 @@ import java.util.Map;
 @Component
 @Slf4j
 @MQConsumer(topic = "OrderTopic_today", consumerGroup = "OrderTopic_today")
-public class DingTalkTopicConsumer extends AbstractMQPushConsumer {
+public class OrderTopicTodayConsumer extends AbstractMQPushConsumer {
 
     @Autowired
     private DingTalkService dingTalkService;
 
+    @Autowired
+    private DingTalkConfig dingTalkConfig;
+
     @Override
     public boolean process(Object message, Map extMap) {
         log.info("==============================OrderTopicTodayTimer消费者启动================================");
-        try {
-            if (message != null) {
-                PersMsgPush msgPush = (PersMsgPush) message;
-                dingTalkService.userMsgPush(msgPush);
-            }
-        }catch (Exception e){
-            log.error("",e);
-            return false;
+
+        if ((Boolean) message) {
+            log.info("----------------------is true----------------------");
+        } else {
+            log.info("----------------------is flase----------------------");
         }
         return true;
     }
