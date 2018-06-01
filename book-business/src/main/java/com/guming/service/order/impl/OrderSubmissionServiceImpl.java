@@ -20,7 +20,7 @@ import com.guming.dao.order.OrderSubmissionRepository;
 import com.guming.dao.order.OrderTemplatesSubmissionRepository;
 import com.guming.dao.shops.ShopRepository;
 import com.guming.dingtalk.DingTalkService;
-import com.guming.dingtalk.request.personmsg.PersonMsgPush;
+import com.guming.dingtalk.request.personmsg.*;
 import com.guming.kingdee.KingdeeService;
 import com.guming.kingdee.response.InventoryProductResponseParam;
 import com.guming.order.dto.query.OrderAuditQuery;
@@ -35,7 +35,6 @@ import com.guming.plans.entity.Pathshop;
 import com.guming.plans.entity.PlansPath;
 import com.guming.products.entity.Products;
 import com.guming.service.arrangement.ArrangementService;
-import com.guming.service.order.OrderAuditingService;
 import com.guming.service.order.OrderSubmissionService;
 import com.guming.service.shops.ShopService;
 import com.guming.shops.entitiy.ShopsShop;
@@ -100,24 +99,24 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         OrderSubmission orderSubmission = orderSubmissionRepository.findOne(id);
         OrderDelete orderDelete = new OrderDelete();
-        BeanUtils.copyProperties(orderSubmission,orderDelete,"id");
+        BeanUtils.copyProperties(orderSubmission, orderDelete, "id");
         orderDelete.setIsValid(false);
 
         List<OrderTemplatesSubmission> templatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
-        List<OrderTemplatesDelete> orderTemplatesDeleteList =  CovertUtil.copyList(templatesSubmissionList,OrderTemplatesDelete.class,"id");
+        List<OrderTemplatesDelete> orderTemplatesDeleteList = CovertUtil.copyList(templatesSubmissionList, OrderTemplatesDelete.class, "id");
         orderDelete.setOrderTemplatesDeleteList(orderTemplatesDeleteList);
         orderDeleteRepository.save(orderDelete);
         orderSubmissionRepository.delete(orderSubmission);
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public List<InventoryProductResponseParam> checkInverntory(Long id){
-        OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(id,OrderStatus.SUBMITTED.getCode());
-        if(orderSubmission == null){
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public List<InventoryProductResponseParam> checkInverntory(Long id) {
+        OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(id, OrderStatus.SUBMITTED.getCode());
+        if (orderSubmission == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_NOT_EXISTS);
         }
         return kingdeeService.orderInventory(orderSubmission).getProductList();
@@ -125,109 +124,109 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public ResponseParam<List<OrderVo>> findByPage(OrderQuery orderQuery){
-        Page<OrderSubmission> pageResult = findOrderSubmissionByPage(orderQuery,null);
-        Pagination pagination = new Pagination(pageResult.getTotalElements(),pageResult.getNumber(),pageResult.getSize());
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public ResponseParam<List<OrderVo>> findByPage(OrderQuery orderQuery) {
+        Page<OrderSubmission> pageResult = findOrderSubmissionByPage(orderQuery, null);
+        Pagination pagination = new Pagination(pageResult.getTotalElements(), pageResult.getNumber(), pageResult.getSize());
         List<OrderSubmission> orderSubmissionList = pageResult.getContent();
         List<OrderVo> result = new ArrayList<OrderVo>();
-        if(orderSubmissionList!=null && !orderSubmissionList.isEmpty()){
-            for (OrderSubmission orderSubmission:orderSubmissionList){
+        if (orderSubmissionList != null && !orderSubmissionList.isEmpty()) {
+            for (OrderSubmission orderSubmission : orderSubmissionList) {
                 OrderVo orderVo = covertOrderSubmissionToOrderVo(orderSubmission);
-                if (orderSubmission.getStatus().equals(OrderStatus.SUBMITTED.getCode())){
+                if (orderSubmission.getStatus().equals(OrderStatus.SUBMITTED.getCode())) {
                     orderVo.setIsRevoke(true);
                 }
                 result.add(orderVo);
             }
         }
-        return ResponseParam.success(result,pagination);
+        return ResponseParam.success(result, pagination);
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public Page<OrderSubmission> findOrderSubmissionByPage(OrderQuery orderQuery, Long orderId){
-        Specification<OrderSubmission> specification = new Specification<OrderSubmission>(){
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public Page<OrderSubmission> findOrderSubmissionByPage(OrderQuery orderQuery, Long orderId) {
+        Specification<OrderSubmission> specification = new Specification<OrderSubmission>() {
 
             @Override
             public Predicate toPredicate(Root<OrderSubmission> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<Predicate>();
 
-                predicates.add(criteriaBuilder.equal(root.get("isValid").as(Boolean.class),true));
+                predicates.add(criteriaBuilder.equal(root.get("isValid").as(Boolean.class), true));
                 if (orderQuery.getStatus() != null) {
                     predicates.add(criteriaBuilder.equal(root.get("status").as(Integer.class), orderQuery.getStatus()));
                 }
-                if (!StringUtils.isEmpty(orderQuery.getCode())){
-                    predicates.add(criteriaBuilder.like(root.get("code").as(String.class),"%"+orderQuery.getCode()+"%"));
+                if (!StringUtils.isEmpty(orderQuery.getCode())) {
+                    predicates.add(criteriaBuilder.like(root.get("code").as(String.class), "%" + orderQuery.getCode() + "%"));
                 }
 
-                if (orderQuery.getTempTypeId()!=null){
-                    predicates.add(criteriaBuilder.equal(root.get("tempTypeId").as(Integer.class),orderQuery.getTempTypeId()));
+                if (orderQuery.getTempTypeId() != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("tempTypeId").as(Integer.class), orderQuery.getTempTypeId()));
                 }
-                if (orderQuery.getUserId() != null){
-                    predicates.add(criteriaBuilder.equal(root.get("makerId").as(Long.class),orderQuery.getUserId()));
+                if (orderQuery.getUserId() != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("makerId").as(Long.class), orderQuery.getUserId()));
                 }
-                if(orderQuery.getShopId() != null){
-                    predicates.add(criteriaBuilder.equal(root.get("shopId").as(Long.class),orderQuery.getShopId()));
+                if (orderQuery.getShopId() != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("shopId").as(Long.class), orderQuery.getShopId()));
                 }
                 //订单id存在，是为了获取下一条订单id
-                if (orderId != null){
-                    predicates.add(criteriaBuilder.lessThan(root.get("id").as(Long.class),orderId));
+                if (orderId != null) {
+                    predicates.add(criteriaBuilder.lessThan(root.get("id").as(Long.class), orderId));
                 }
 
-                if (!StringUtils.isEmpty(orderQuery.getShopName())){
-                    predicates.add(criteriaBuilder.like(root.join("shopsShop",JoinType.LEFT).get("name"),"%"+orderQuery.getShopName()+"%"));
+                if (!StringUtils.isEmpty(orderQuery.getShopName())) {
+                    predicates.add(criteriaBuilder.like(root.join("shopsShop", JoinType.LEFT).get("name"), "%" + orderQuery.getShopName() + "%"));
                 }
-                if (orderQuery.getTaglineId()==null && orderQuery.getWareHouseId() != null){
-                    Join<TagLine,OrderSubmission> join=  root.join("plansPath",JoinType.LEFT);
-                    predicates.add(criteriaBuilder.equal(join.get("tagLine").get("tagWarehouseId"),orderQuery.getWareHouseId()));
+                if (orderQuery.getTaglineId() == null && orderQuery.getWareHouseId() != null) {
+                    Join<TagLine, OrderSubmission> join = root.join("plansPath", JoinType.LEFT);
+                    predicates.add(criteriaBuilder.equal(join.get("tagLine").get("tagWarehouseId"), orderQuery.getWareHouseId()));
                 }
-                if (orderQuery.getTaglineId()!=null){
-                    Join<PlansPath,OrderSubmission> join=  root.join("plansPath",JoinType.LEFT);
-                    predicates.add(criteriaBuilder.equal(join.get("tagLineId"),orderQuery.getTaglineId()));
+                if (orderQuery.getTaglineId() != null) {
+                    Join<PlansPath, OrderSubmission> join = root.join("plansPath", JoinType.LEFT);
+                    predicates.add(criteriaBuilder.equal(join.get("tagLineId"), orderQuery.getTaglineId()));
                 }
                 return criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()])).orderBy(criteriaBuilder.desc(root.get("id").as(Long.class))).getRestriction();
             }
         };
-        Pageable pageable = new PageRequest(orderQuery.getPage(),orderQuery.getPageSize());
-        Page<OrderSubmission> pageResult = orderSubmissionRepository.findAll(specification,pageable);
+        Pageable pageable = new PageRequest(orderQuery.getPage(), orderQuery.getPageSize());
+        Page<OrderSubmission> pageResult = orderSubmissionRepository.findAll(specification, pageable);
         return pageResult;
     }
 
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public OrderSubmission nextOrderSubmission(OrderAuditQuery orderAuditQuery){
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public OrderSubmission nextOrderSubmission(OrderAuditQuery orderAuditQuery) {
         orderAuditQuery.setPage(1);
         orderAuditQuery.setPageSize(1);
-        List<OrderSubmission> orderSubmissionList = findOrderSubmissionByPage(orderAuditQuery,orderAuditQuery.getOrderId()).getContent();
-        if (orderSubmissionList != null && !orderSubmissionList.isEmpty()){
+        List<OrderSubmission> orderSubmissionList = findOrderSubmissionByPage(orderAuditQuery, orderAuditQuery.getOrderId()).getContent();
+        if (orderSubmissionList != null && !orderSubmissionList.isEmpty()) {
             return orderSubmissionList.get(0);
         }
         return null;
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public OrderVo nextOrder(OrderAuditQuery orderAuditQuery){
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public OrderVo nextOrder(OrderAuditQuery orderAuditQuery) {
         return covertOrderSubmissionToOrderVoAll(nextOrderSubmission(orderAuditQuery));
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public List<OrderSubmission> findExpireUnAuditOrder() {
-        return orderSubmissionRepository.findExpireUnAuditOrder(new Date(),OrderStatus.SUBMITTED.getCode());
+        return orderSubmissionRepository.findExpireUnAuditOrder(new Date(), OrderStatus.SUBMITTED.getCode());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteOrder(List<OrderSubmission> orderSubmissionList){
-        if (orderSubmissionList != null && !orderSubmissionList.isEmpty()){
+    public void deleteOrder(List<OrderSubmission> orderSubmissionList) {
+        if (orderSubmissionList != null && !orderSubmissionList.isEmpty()) {
             List<OrderDelete> orderDeleteList = new ArrayList<>();
-            for (OrderSubmission orderSubmission : orderSubmissionList){
+            for (OrderSubmission orderSubmission : orderSubmissionList) {
                 OrderDelete orderDelete = new OrderDelete();
-                BeanUtils.copyProperties(orderSubmission,orderDelete);
+                BeanUtils.copyProperties(orderSubmission, orderDelete);
                 List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
-                List<OrderTemplatesDelete> orderTemplatesDeleteList = CovertUtil.copyList(orderTemplatesSubmissionList,OrderTemplatesDelete.class);
+                List<OrderTemplatesDelete> orderTemplatesDeleteList = CovertUtil.copyList(orderTemplatesSubmissionList, OrderTemplatesDelete.class);
                 orderDelete.setOrderTemplatesDeleteList(orderTemplatesDeleteList);
                 orderDeleteList.add(orderDelete);
             }
@@ -238,20 +237,20 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String orderSubmit(Long orderId, Long sendShopId, User user){
-        if (orderId == null){
+    public String orderSubmit(Long orderId, Long sendShopId, User user) {
+        if (orderId == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_SEND_SHOP_ID_EMPTY);
         }
 
         OrderSubmission orderSubmission = orderSubmissionRepository.findOne(orderId);
-        if (orderSubmission == null){
+        if (orderSubmission == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_NOT_EXISTS);
         }
-        if (!orderSubmission.getStatus().equals(OrderStatus.UNSUBMITTED.getCode())){
+        if (!orderSubmission.getStatus().equals(OrderStatus.UNSUBMITTED.getCode())) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_STATUS_FLOW);
         }
         List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
-        if (orderTemplatesSubmissionList==null && orderTemplatesSubmissionList.isEmpty()){
+        if (orderTemplatesSubmissionList == null && orderTemplatesSubmissionList.isEmpty()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_PRODUCTS_NOT_EXISTS);
         }
 
@@ -265,25 +264,25 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
         //判断收货店铺是否存在
         ShopsShop sendShop = shopRepository.findOne(sendShopId);
-        if (sendShop == null){
+        if (sendShop == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_SEND_SHOP_NOT_MATCH);
         }
         //判断下单店要与收货店铺属于同一商家同一路线下
         ShopsShop shopsShop = orderSubmission.getShopsShop();
-        if(!validateOrderShopAndRecipientShop(user.getId(),shopsShop.getId(),sendShopId)){
+        if (!validateOrderShopAndRecipientShop(user.getId(), shopsShop.getId(), sendShopId)) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_SEND_SHOP_NOT_MATCH);
         }
         orderSubmission.setSendShop(sendShop);
 
         Pathshop pathshop = sendShop.getPathshop();
-        if (pathshop == null){
-            throw  new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_OEDER_SEND_SHOP_PATH_NOT_EXISTS);
+        if (pathshop == null) {
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_OEDER_SEND_SHOP_PATH_NOT_EXISTS);
         }
         orderSubmission.setPlansPath(pathshop.getPlansPath());
 
         //获取相应的送货安排,设置送货时间
         PlansArrangement plansArrangement = arrangementService.getSendTimePlansArrangement(sendShopId);
-        if (plansArrangement == null || plansArrangement.getDay() == null){
+        if (plansArrangement == null || plansArrangement.getDay() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_SEND_TIME_OK);
         }
         orderSubmission.setSendTime(plansArrangement.getDay());
@@ -297,10 +296,10 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
     public OrderAuditingVo orderAudit(OrderAuditQuery orderAuditQuery) {
         //当前的订单
         OrderSubmission orderSubmission = orderSubmissionRepository.findOne(orderAuditQuery.getOrderId());
-        if (orderSubmission == null){
+        if (orderSubmission == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_NOT_EXISTS);
         }
-        if (!orderSubmission.getStatus().equals(OrderStatus.SUBMITTED.getCode())){
+        if (!orderSubmission.getStatus().equals(OrderStatus.SUBMITTED.getCode())) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_STATUS_FLOW);
         }
 
@@ -396,7 +395,7 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
         orderSubmissionRepository.delete(orderSubmission.getId());
 
         //订单审核后钉钉通知
-        auditNotify(user,orderAuditing);
+        auditNotify(user, orderAuditing);
 
         //审核成功后返回订单id和status给前台做刷新展示
         if (nextOrderSubmission != null) {
@@ -408,19 +407,40 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
         return null;
     }
 
-    private void auditNotify(User user,OrderAuditing orderAuditing){
+    private void auditNotify(User user, OrderAuditing orderAuditing) {
         List<UserDing> userDingList = user.getUserDingList();
         String userIdsStr = "";
-        if (userDingList != null && !userDingList.isEmpty()){
-            for (UserDing userDing : userDingList){
-                userIdsStr+=userDing.getDingUser()+",";
+        if (userDingList != null && !userDingList.isEmpty()) {
+            for (UserDing userDing : userDingList) {
+                userIdsStr += userDing.getDingUser() + "|";
             }
-            if (!StringUtils.isEmpty(userIdsStr)){
-                userIdsStr = userIdsStr.substring(0,userIdsStr.length()-1);
+            if (!StringUtils.isEmpty(userIdsStr)) {
+                userIdsStr = userIdsStr.substring(0, userIdsStr.length() - 1);
 
-                PersonMsgPush personMsgPush = new PersonMsgPush();
+                PersMsgPush persMsgPush = new PersMsgPush();
+                persMsgPush.setTouser(userIdsStr);
+                Oa oa = new Oa();
+                oa.setMessageUrl("www.baidu.com");
+                PerBody body = new PerBody();
+                body.setTitle("个人推送测试");
+                Form form = new Form();
+                form.setKey("程程");
+                form.setValue("test");
+                List formList = new ArrayList();
+                formList.add(form);
+                body.setFormList(formList);
+                Rich rich = new Rich();
+                rich.setNum("998");
+                rich.setUnit("元");
+                body.setRich(rich);
+                body.setContent("个人消息推送+中间件测试！");
+                body.setAuthor("Ccn");
+                body.setImage("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1527772329855&di=c095101e1d57d215e1ef14a17c295c69&imgtype=0&src=http%3A%2F%2Fimg.taopic.com%2Fuploads%2Fallimg%2F111202%2F58010-1112020ZJ645.jpg");
+                oa.setPerBody(body);
+                persMsgPush.setOa(oa);
 
-                dingTalkService.userMsgPush(userIdsStr,personMsgPush);
+
+                dingTalkService.userMsgPush(persMsgPush);
             }
 
         }
@@ -428,9 +448,9 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public OrderVo findById(Long id) {
-        if (id == null){
+        if (id == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ID_EMPTY);
         }
         OrderSubmission orderSubmission = orderSubmissionRepository.findOne(id);
@@ -440,27 +460,27 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public OrderVo findByShopIdAndTempId(Long shopId,Long tempId) {
-        OrderSubmission orderSubmission = orderSubmissionRepository.findCartByShopIdAndTempId(shopId,tempId);
-        if (orderSubmission == null){
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public OrderVo findByShopIdAndTempId(Long shopId, Long tempId) {
+        OrderSubmission orderSubmission = orderSubmissionRepository.findCartByShopIdAndTempId(shopId, tempId);
+        if (orderSubmission == null) {
             return null;
         }
         OrderVo orderVo = covertOrderSubmissionToOrderVo(orderSubmission);
 
         PlansPath plansPath = orderSubmission.getPlansPath();
-        if (plansPath != null){
+        if (plansPath != null) {
             TagLine tagLine = plansPath.getTagLine();
-            if (tagLine != null){
-                orderVo.setTagLineMapVo(new MapVo(tagLine.getId(),tagLine.getName()));
-                orderVo.setShippingMapVo(new MapVo(tagLine.getFtype().longValue(),i18nHandler(LogisticsStatus.getLogisticsStatus(tagLine.getFtype()).getI18N())));
+            if (tagLine != null) {
+                orderVo.setTagLineMapVo(new MapVo(tagLine.getId(), tagLine.getName()));
+                orderVo.setShippingMapVo(new MapVo(tagLine.getFtype().longValue(), i18nHandler(LogisticsStatus.getLogisticsStatus(tagLine.getFtype()).getI18N())));
             }
         }
 
         List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
         List<OrderTemplateVo> orderTemplateVoList = new ArrayList<OrderTemplateVo>();
-        if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()){
-            for (OrderTemplatesSubmission orderTemplatesSubmission:orderTemplatesSubmissionList ){
+        if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()) {
+            for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList) {
                 if (orderTemplatesSubmission.getIsValid()) {
                     orderTemplateVoList.add(covertOrderTemplatesSubmissionToOrderTemplateVo(orderTemplatesSubmission));
                 }
@@ -472,14 +492,14 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public OrderVo findCartByShopIdAndTempId(Long shopId, Long tempId) {
-        OrderSubmission orderSubmission = orderSubmissionRepository.findCartByShopIdAndTempId(shopId,tempId);
+        OrderSubmission orderSubmission = orderSubmissionRepository.findCartByShopIdAndTempId(shopId, tempId);
         List<OrderTemplateVo> orderTemplateVoList = new ArrayList<OrderTemplateVo>();
         OrderVo orderVo = covertOrderSubmissionToOrderVo(orderSubmission);
         List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
-        if (orderTemplatesSubmissionList!= null && !orderTemplatesSubmissionList.isEmpty()){
-            for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList){
+        if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()) {
+            for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList) {
                 orderTemplateVoList.add(covertOrderTemplatesSubmissionToOrderTemplateVo(orderTemplatesSubmission));
             }
         }
@@ -490,10 +510,11 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     /**
      * 转换器
+     *
      * @param orderSubmission
      * @return
      */
-    private OrderVo covertOrderSubmissionToOrderVoAll(OrderSubmission orderSubmission){
+    private OrderVo covertOrderSubmissionToOrderVoAll(OrderSubmission orderSubmission) {
         if (orderSubmission != null) {
             OrderVo orderVo = covertOrderSubmissionToOrderVo(orderSubmission);
 
@@ -526,12 +547,13 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     /**
      * 转换器
+     *
      * @param orderTemplatesSubmission
      * @return
      */
-    private OrderTemplateVo covertOrderTemplatesSubmissionToOrderTemplateVo(OrderTemplatesSubmission orderTemplatesSubmission){
+    private OrderTemplateVo covertOrderTemplatesSubmissionToOrderTemplateVo(OrderTemplatesSubmission orderTemplatesSubmission) {
         OrderTemplateVo orderTemplateVo = new OrderTemplateVo();
-        BeanUtils.copyProperties(orderTemplatesSubmission,orderTemplateVo);
+        BeanUtils.copyProperties(orderTemplatesSubmission, orderTemplateVo);
         Products products = orderTemplatesSubmission.getProducts();
         orderTemplateVo.setProductName(products.getName());
         orderTemplateVo.setProductPrice(products.getPrice());
@@ -545,10 +567,11 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     /**
      * 转换器
+     *
      * @param orderSubmission
      * @return
      */
-    private OrderVo covertOrderSubmissionToOrderVo(OrderSubmission orderSubmission){
+    private OrderVo covertOrderSubmissionToOrderVo(OrderSubmission orderSubmission) {
         OrderVo orderVo = null;
         if (orderSubmission != null) {
             orderVo = new OrderVo();
@@ -562,14 +585,14 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
             //收货商店
             ShopsShop sendShop = orderSubmission.getSendShop();
-            if (sendShop != null){
+            if (sendShop != null) {
                 orderVo.setAddress(sendShop.getAddress());
             }
 
             Integer status = orderSubmission.getStatus();
             //订单状态
             orderVo.setStatusMapVo(new MapVo(orderSubmission.getStatus().longValue(), i18nHandler(OrderStatus.getOrderStatus(status).getI18N())));
-            if (status.equals(OrderStatus.SUBMITTED.getCode())){
+            if (status.equals(OrderStatus.SUBMITTED.getCode())) {
                 orderVo.setIsRevoke(true);
             }
 
@@ -605,41 +628,41 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
-    public OrderVo findShopTemplateOrdersInSendTime(Long shopId,Long tempId,Date sendTime,Integer status){
-        OrderSubmission orderSubmission = orderSubmissionRepository.findByShopIdAndTempIdAndStatus(shopId,tempId,sendTime,status);
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public OrderVo findShopTemplateOrdersInSendTime(Long shopId, Long tempId, Date sendTime, Integer status) {
+        OrderSubmission orderSubmission = orderSubmissionRepository.findByShopIdAndTempIdAndStatus(shopId, tempId, sendTime, status);
         return covertOrderSubmissionToOrderVo(orderSubmission);
     }
 
     @Override
-    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
     public OrderVo findByTempIdAndStatus(Long tempId, Integer status) {
-        OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(tempId,OrderStatus.UNSUBMITTED.getCode());
+        OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(tempId, OrderStatus.UNSUBMITTED.getCode());
         return covertOrderSubmissionToOrderVo(orderSubmission);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void revokeOrder(Long id) {
-        OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(id,OrderStatus.SUBMITTED.getCode());
-        if (orderSubmission == null){
+        OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(id, OrderStatus.SUBMITTED.getCode());
+        if (orderSubmission == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_REVOKE_ERROR);
         }
 
         PlansArrangement plansArrangement = arrangementService.getSendTimePlansArrangement(orderSubmission.getShopId());
-        if (plansArrangement == null){
+        if (plansArrangement == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_REVOKE_TIME_ERROR);
         }
 
         //撤回订单时，删除管理端标记失效的数据
-        orderTemplatesSubmissionRepository.deleteByOrderIdAndIsValid(orderSubmission.getId(),false);
+        orderTemplatesSubmissionRepository.deleteByOrderIdAndIsValid(orderSubmission.getId(), false);
 
         orderSubmission.setStatus(OrderStatus.UNSUBMITTED.getCode());
         List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
         List<OrderTemplatesSubmission> zeroAmountTemplatesProducts = new ArrayList<>();
-        if(orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()){
-            for (OrderTemplatesSubmission orderTemplatesSubmission:orderTemplatesSubmissionList){
-                if (!orderTemplatesSubmission.getIsValid() || orderTemplatesSubmission.getAmount()<=0){
+        if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()) {
+            for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList) {
+                if (!orderTemplatesSubmission.getIsValid() || orderTemplatesSubmission.getAmount() <= 0) {
                     zeroAmountTemplatesProducts.add(orderTemplatesSubmission);
                 }
             }
@@ -650,13 +673,14 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
 
     /**
      * 验证收货店铺是否和下单店铺同属于同一用户，同一路线
-     * @param userId                下单人id
-     * @param shopId                下单店铺id
-     * @param recipientShopId       收货店铺id
+     *
+     * @param userId          下单人id
+     * @param shopId          下单店铺id
+     * @param recipientShopId 收货店铺id
      * @return
      */
-    private Boolean validateOrderShopAndRecipientShop(Long userId,Long shopId,Long recipientShopId){
-        List<ShopVo> shopVoList = shopService.getRecipientShopMapVoList(userId,shopId);
+    private Boolean validateOrderShopAndRecipientShop(Long userId, Long shopId, Long recipientShopId) {
+        List<ShopVo> shopVoList = shopService.getRecipientShopMapVoList(userId, shopId);
         if (shopVoList != null && !shopVoList.isEmpty()) {
             for (ShopVo shopVo : shopVoList) {
                 if (shopVo.getId().equals(recipientShopId)) {

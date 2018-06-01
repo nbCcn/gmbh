@@ -7,11 +7,11 @@ import java.util.List;
 
 /**
  * @Author: PengCheng
- * @Description:    信息体
+ * @Description: 信息体
  * @Date: 2018/5/28
  */
 @Data
-public class Body {
+public class PerBody {
 
     @JSONField(name = "title")
     private String title;
@@ -21,6 +21,18 @@ public class Body {
 
     @JSONField(name = "rich")
     private Rich rich;
+
+    @JSONField(name = "content")
+    private String content;
+
+    @JSONField(name = "image")
+    private String image;
+
+    @JSONField(name = "file_count")
+    private String fileCount;
+
+    @JSONField(name = "author")
+    private String author;
 
 
 }

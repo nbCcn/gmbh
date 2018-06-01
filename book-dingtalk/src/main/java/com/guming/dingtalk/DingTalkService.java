@@ -12,7 +12,8 @@ import com.guming.common.utils.EncryptUtils;
 import com.guming.common.utils.StringToListUtils;
 import com.guming.config.DingTalkConfig;
 import com.guming.config.HttpClientManagerFactory;
-import com.guming.dingtalk.request.personmsg.PersonMsgPush;
+import com.guming.dingtalk.request.personmsg.DeptMsgPush;
+import com.guming.dingtalk.request.personmsg.PersMsgPush;
 import com.guming.dingtalk.response.DingJsapiResponseParam;
 import com.guming.dingtalk.response.DingTokenResponseParam;
 import com.guming.dingtalk.response.DingUserIdResponseParam;
@@ -20,12 +21,10 @@ import com.guming.dingtalk.response.DingUserInfoResponseParam;
 import com.guming.dingtalk.vo.DingDepartmentVo;
 import com.guming.dingtalk.vo.DingSignVo;
 import com.guming.redis.RedisService;
-import com.taobao.api.ApiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +83,7 @@ public class DingTalkService {
      * 在此方法中，为了避免频繁获取access_token，
      * 在距离上一次获取access_token时间在两个小时之内的情况，
      * 将直接从持久化存储中读取access_token
-     *
+     * <p>
      * 因为access_token和jsapi_ticket的过期时间都是7200秒
      * 所以在获取access_token的同时也去获取了jsapi_ticket
      */
@@ -150,7 +149,7 @@ public class DingTalkService {
      */
     public DingSignVo config(String url) {
         String accessToken = getAccessToken();
-        logger.dingtalk("================accessToken:"+accessToken);
+        logger.dingtalk("================accessToken:" + accessToken);
         String ticket = getJsapiTicket(accessToken);
         String nonceStr = UUID.randomUUID().toString().replace("-", "");
         String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
@@ -222,7 +221,7 @@ public class DingTalkService {
     /**
      * 参数传递前封装成list形式，调用StringToListUtils.parseString 方法，以返回规定格式Str
      * <p>
-     * 钉钉企业消息推送
+     * 钉钉企业消息异步推送
      *
      * @throws Exception
      */
@@ -236,7 +235,6 @@ public class DingTalkService {
         req.setAgentId(Long.parseLong(dingTalkConfig.getAgentId()));
         req.setDeptIdList(deptIdsStr);
         req.setToAllUser(true);
-
         // 发送消息体有待修改
         req.setMsgcontentString("{\"message_url\": \"http://dingtalk.com\",\"head\": {\"bgcolor\": \"FFBBBBBB\",\"text\": \"头部标题\"},\"body\": {\"title\": \"正文标题\",\"form\": [{\"key\": \"姓名:\",\"value\": \"张三\"},{\"key\": \"爱好:\",\"value\": \"打球、听音乐\"}],\"rich\": {\"num\": \"15.6\",\"unit\": \"元\"},\"content\": \"测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试\",\"image\": \"@lADOADmaWMzazQKA\",\"file_count\": \"3\",\"author\": \"李四 \"}}");
         CorpMessageCorpconversationAsyncsendResponse rsp = client.execute(req, access_token);
@@ -254,36 +252,20 @@ public class DingTalkService {
      *
      * @throws Exception
      */
-    public void userMsgPush(String userIdsStr, PersonMsgPush personMsgPush) {
-        logger.dingtalk("-------------------钉钉用户推送-----------------");
-        String access_token = this.getAccessToken();
 
-        DingTalkClient client = new DefaultDingTalkClient("https://eco.taobao.com/router/rest");
-        CorpMessageCorpconversationAsyncsendRequest req = new CorpMessageCorpconversationAsyncsendRequest();
-        req.setMsgtype("OA");
-        req.setAgentId(Long.parseLong(dingTalkConfig.getAgentId()));
-        req.setUseridList(userIdsStr);
-        req.setToAllUser(true);
-        req.setMsgcontentString("{\"message_url\": \"http://dingtalk.com\",\"head\": {\"bgcolor\": \"FFBBBBBB\",\"text\": \"头部标题\"},\"body\": {\"title\": \"正文标题\",\"form\": [{\"key\": \"姓名:\",\"value\": \"张三\"},{\"key\": \"爱好:\",\"value\": \"打球、听音乐\"}],\"rich\": {\"num\": \"15.6\",\"unit\": \"元\"},\"content\": \"测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试\",\"image\": \"@lADOADmaWMzazQKA\",\"file_count\": \"3\",\"author\": \"李四 \"}}");
+    public void userMsgPush(PersMsgPush persMsgPush) {
+        logger.dingtalk("-------------------钉钉用户推送-----------------");
         try {
-            CorpMessageCorpconversationAsyncsendResponse rsp = client.execute(req, access_token);
-            System.out.println(rsp.getBody());
-        } catch (ApiException e) {
-            logger.info("", e);
-            e.printStackTrace();
+            String access_token = this.getAccessToken();
+
+            String url = dingTalkConfig.getMsgSend() + "?access_token=" + getAccessToken();
+            String msg = JSON.toJSONString(persMsgPush);
+            String strResult = httpClientManagerFactory.httpPost(url, msg, "UTF8");
+            System.out.println(strResult);
+        } catch (Exception e) {
+            logger.info("信息推送失败！！", e);
         }
 
-        //// 发送消息体有待修改
-        //req.setMsgcontentString(JSON.toJSONString(personMsgPush));
-        //CorpMessageCorpconversationAsyncsendResponse rsp = null;
-        //try {
-        //    rsp = client.execute(req, access_token);
-        //} catch (ApiException e) {
-        //    logger.error("",e);
-        //}
-        //logger.dingtalk("-------------------响应参数-----------------");
-        //logger.dingtalk(rsp.getBody());
-        //logger.dingtalk("------------------------------------");
     }
 
 

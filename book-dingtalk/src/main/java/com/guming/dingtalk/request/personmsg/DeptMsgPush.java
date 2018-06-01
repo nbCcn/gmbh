@@ -7,11 +7,11 @@ import lombok.Data;
 
 /**
  * @Author: PengCheng
- * @Description: 个人推送数据实体
+ * @Description: 部门推送数据实体
  * @Date: 2018/5/28
  */
 @Data
-public class PersonMsgPush {
+public class DeptMsgPush {
 
     /**
      * 详情url

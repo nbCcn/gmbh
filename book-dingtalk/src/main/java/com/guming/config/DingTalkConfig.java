@@ -30,6 +30,16 @@ public class DingTalkConfig {
 
     private String msgUrl;
 
+    private String msgSend;
+
+    public String getMsgSend() {
+        return msgSend;
+    }
+
+    public void setMsgSend(String msgSend) {
+        this.msgSend = msgSend;
+    }
+
     public String getAgentId() {
         return agentId;
     }
