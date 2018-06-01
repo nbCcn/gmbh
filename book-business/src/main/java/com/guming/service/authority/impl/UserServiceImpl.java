@@ -150,8 +150,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         String unDeleteUser = "";
         if (users!=null && !users.isEmpty()){
             for(User user: users){
-                Integer userShopSize = user.getShopsShops().size();
-                if (userShopSize >0){
+                List<ShopsShop> shopsShops = user.getShopsShops();
+                if (shopsShops!=null && !shopsShops.isEmpty()){
                     unDeleteUser += user.getUserName()+",";
                 }else{
                     deleteUserList.add(user);

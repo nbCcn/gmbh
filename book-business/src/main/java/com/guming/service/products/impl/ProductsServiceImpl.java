@@ -123,12 +123,12 @@ public class ProductsServiceImpl extends BaseServiceImpl implements ProductsServ
 
     private Page<Products> findProductsByPage(ProductsQuery productsQuery, Boolean isPaging){
         Map<String,Object> queryMap = new LinkedHashMap<>();
-//       StringBuilder querySql =new StringBuilder("select p.* from sys_products p,sys_products_tagwarehouse pw,sys_products_tagline pl " +
-//               "where 1=1 and p.id = pw.product_id and pl.product_id=p.id ");
+       StringBuilder querySql =new StringBuilder("select p.* from sys_products p,sys_products_tagwarehouse pw,sys_products_tagline pl " +
+               "where 1=1 and p.id = pw.product_id and pl.product_id=p.id ");
 
-        StringBuilder querySql =new StringBuilder("select p.* from sys_products p left join sys_products_tagwarehouse pw on p.id = pw.product_id " +
-                " left join sys_products_tagline pl on pl.product_id=p.id " +
-                "where 1=1 ");
+//        StringBuilder querySql =new StringBuilder("select p.* from sys_products p left join sys_products_tagwarehouse pw on p.id = pw.product_id " +
+//                " left join sys_products_tagline pl on pl.product_id=p.id " +
+//                "where 1=1 ");
         if (!StringUtils.isEmpty(productsQuery.getName())){
             querySql.append(" and ( p.name like :name");
             queryMap.put("name","%"+productsQuery.getName()+"%");
