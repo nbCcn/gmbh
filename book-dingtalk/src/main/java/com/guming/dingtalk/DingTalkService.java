@@ -52,6 +52,8 @@ public class DingTalkService {
 
     public static final String JSAPI_TICKET_KEY = "client.login.jsapi.ticket";
 
+    public static final String MSG_TYPE = "oa";
+
     @Autowired
     private HttpClientManagerFactory httpClientManagerFactory;
 
@@ -231,7 +233,7 @@ public class DingTalkService {
 
         DingTalkClient client = new DefaultDingTalkClient(dingTalkConfig.getMsgUrl());
         CorpMessageCorpconversationAsyncsendRequest req = new CorpMessageCorpconversationAsyncsendRequest();
-        req.setMsgtype("oa");
+        req.setMsgtype(MSG_TYPE);
         req.setAgentId(Long.parseLong(dingTalkConfig.getAgentId()));
         req.setDeptIdList(deptIdsStr);
         req.setToAllUser(true);
@@ -256,6 +258,8 @@ public class DingTalkService {
     public void userMsgPush(PersMsgPush persMsgPush) {
         logger.dingtalk("-------------------钉钉用户推送-----------------");
         try {
+            persMsgPush.setAgentId(dingTalkConfig.getAgentId());
+            persMsgPush.setMsgtype(MSG_TYPE);
             String access_token = this.getAccessToken();
 
             String url = dingTalkConfig.getMsgSend() + "?access_token=" + getAccessToken();

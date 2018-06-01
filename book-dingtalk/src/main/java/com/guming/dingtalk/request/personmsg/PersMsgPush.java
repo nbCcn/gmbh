@@ -24,13 +24,13 @@ public class PersMsgPush {
      * 企业应用id
      */
     @JSONField(name = "agentid")
-    private String agentId = "175219166";
+    private String agentId;
 
     /**
      * 消息类型
      */
     @JSONField(name = "msgtype")
-    private String msgtype = "oa";
+    private String msgtype;
 
     /**
      * 消息字段

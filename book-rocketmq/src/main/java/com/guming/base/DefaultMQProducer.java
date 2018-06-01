@@ -1,7 +1,6 @@
 package com.guming.base;
 
 import com.guming.annotation.MQProducer;
-import com.guming.base.AbstractMQProducer;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,5 +10,5 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @MQProducer
-public class MyDefaultMq extends AbstractMQProducer {
+public class DefaultMQProducer extends AbstractMQProducer {
 }

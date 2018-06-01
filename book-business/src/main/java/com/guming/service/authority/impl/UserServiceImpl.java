@@ -21,6 +21,7 @@ import com.guming.config.BookConfig;
 import com.guming.dao.authority.RoleRepository;
 import com.guming.dao.authority.UserRepository;
 import com.guming.service.authority.UserService;
+import com.guming.shops.entitiy.ShopsShop;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

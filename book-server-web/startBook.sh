@@ -6,5 +6,5 @@ pid=`ps -ef |grep $PROJECTNAME |grep -v "grep" |awk '{print $2}'`
 if [ $pid ]; then  
     echo "App  is  running  and pid=$pid"  
 else  
-   nohup java -jar $CODE_HOME/$PROJECTNAME.jar > /dev/null 2>&1 &
+   nohup java -Xms256m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M -jar $CODE_HOME/$PROJECTNAME.jar > /dev/null 2>&1 &
 fi 

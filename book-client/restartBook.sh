@@ -10,4 +10,4 @@ if [ $pid ]; then
     echo "App  is  running  and pid=$pid"  
     curl -X POST -u $USER:PASS http://127.0.0.1:8053/stopServer
 fi  
-nohup java -jar $CODE_HOME/$PROJECTNAME.jar > /dev/null 2>&1 &
+nohup java -Xms256m -Xmx512m -XX:PermSize=256M -XX:MaxPermSize=512M -jar $CODE_HOME/$PROJECTNAME.jar > /dev/null 2>&1 &

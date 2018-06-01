@@ -82,12 +82,6 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
         </dependency>
 
-        <!--spring-session中包含redis-->
-        <dependency>
-            <groupId>org.springframework.session</groupId>
-            <artifactId>spring-session</artifactId>
-        </dependency>
-
         <!--lombok Gson-->
         <dependency>
             <groupId>org.projectlombok</groupId>
