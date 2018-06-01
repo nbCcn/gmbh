@@ -378,9 +378,6 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 user = userRepository.findOne(userId);
                 user.setUserName(shopUserDto.getPhone());
                 user.setUpdateTime(new Date());
-                String initPass = RandomStringUtil.generateRandomString(12);
-                user.setInitPass(initPass);
-                user.setUserPass(new PBKDF2PasswordHasher().encode(initPass));
                 user.setIsStaff(false);
                 user.setIsActive(shopUserDto.getIsActive());
                 user.setIsSuperuser(false);
