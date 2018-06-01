@@ -22,15 +22,15 @@ public class MQProperties {
     /**
      * config send message timeout
      */
-    private Integer sendMsgTimeout = 3000;
+    private Integer sendMsgTimeout;
     /**
      * switch of trace message consumer: send message consumer info to topic: rmq_sys_TRACE_DATA
      */
-    private Boolean traceEnabled = Boolean.TRUE;
+    private Boolean traceEnabled;
 
     /**
      * switch of send message with vip channel
      */
-    private Boolean vipChannelEnabled = Boolean.TRUE;
+    private Boolean vipChannelEnabled;
 
 }

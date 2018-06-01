@@ -95,7 +95,7 @@ spring:
     # 发送超时配置毫秒数, 可选, 默认3000
     send-msg-timeout: 5000
     trace-enabled: true
-    #vip-channel-enabled: false
+    vip-channel-enabled: false
 
 #    kingdee:
 #      driver-class-name: com.mysql.jdbc.Driver
