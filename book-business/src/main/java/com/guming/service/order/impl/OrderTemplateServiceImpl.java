@@ -15,13 +15,16 @@ import com.guming.order.dto.OrderTemplateAddDto;
 import com.guming.order.dto.OrderTemplateProductAddDto;
 import com.guming.order.entity.OrderSubmission;
 import com.guming.order.entity.OrderTemplatesSubmission;
+import com.guming.order.vo.OrderTemplateVo;
 import com.guming.orderTemplate.entity.TemplateProducts;
 import com.guming.products.entity.Products;
 import com.guming.service.order.OrderService;
 import com.guming.service.order.OrderTemplateService;
 import com.guming.service.products.ProductsService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -205,7 +208,7 @@ public class OrderTemplateServiceImpl extends BaseServiceImpl implements OrderTe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void addOrderProducts(OrderTemplateProductAddDto orderTemplateProductAddDto) {
+    public List<OrderTemplateVo> addOrderProducts(OrderTemplateProductAddDto orderTemplateProductAddDto) {
         List<Long> productIdList = orderTemplateProductAddDto.getProductIdList();
         if (productIdList != null && !productIdList.isEmpty()){
             //查看所属的已提交的订单是否存在
@@ -221,11 +224,38 @@ public class OrderTemplateServiceImpl extends BaseServiceImpl implements OrderTe
                     orderTemplatesSubmission.setOrderId(orderSubmission.getId());
                     orderTemplatesSubmission.setAmount(0);
                     orderTemplatesSubmission.setCode(OrderUtil.versionGenerate());
+                    orderTemplatesSubmission.setProducts(products);
                     orderTemplatesSubmissionList.add(orderTemplatesSubmission);
                 }
-                orderTemplatesSubmissionRepository.save(orderTemplatesSubmissionList);
+                orderTemplatesSubmissionList = orderTemplatesSubmissionRepository.save(orderTemplatesSubmissionList);
+                List<OrderTemplateVo> orderTemplateVoList = new ArrayList<>();
+                if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()) {
+                    for (OrderTemplatesSubmission orderTemplatesSubmission : orderTemplatesSubmissionList) {
+                        orderTemplateVoList.add(covertOrderTemplatesSubmissionToOrderTemplateVo(orderTemplatesSubmission));
+                    }
+                }
+                return orderTemplateVoList;
             }
-
         }
+        return null;
+    }
+
+    /**
+     * 转换器
+     * @param orderTemplatesSubmission
+     * @return
+     */
+    private OrderTemplateVo covertOrderTemplatesSubmissionToOrderTemplateVo(OrderTemplatesSubmission orderTemplatesSubmission){
+        OrderTemplateVo orderTemplateVo = new OrderTemplateVo();
+        BeanUtils.copyProperties(orderTemplatesSubmission,orderTemplateVo);
+        Products products = orderTemplatesSubmission.getProducts();
+        orderTemplateVo.setProductName(products.getName());
+        orderTemplateVo.setProductPrice(products.getPrice());
+        orderTemplateVo.setSpec(products.getSpec());
+        orderTemplateVo.setUnit(products.getUnit());
+        orderTemplateVo.setStep(products.getStep());
+        orderTemplateVo.setStockUnit(products.getStockUnit());
+        orderTemplateVo.setStock(products.getStock());
+        return orderTemplateVo;
     }
 }

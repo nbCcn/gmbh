@@ -1,7 +1,5 @@
 package com.guming.shops.entitiy;
 
-
-
 import com.guming.authority.entity.User;
 import com.guming.plans.entity.Pathshop;
 import com.guming.tagrank.entity.TagRank;

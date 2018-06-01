@@ -108,6 +108,7 @@ public class KingdeeService {
         syncOrderRequestParam.setOrderCode(orderSubmission.getCode());
         syncOrderRequestParam.setLogistics(orderSubmission.getPlansPath().getTagLine().getFtype());
 
+        SynOrderResponseParam synOrderResponseParam = null;
         if (orderSubmission.getIsValid()) {
             List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
             if (orderTemplatesSubmissionList != null && !orderTemplatesSubmissionList.isEmpty()) {
@@ -124,33 +125,31 @@ public class KingdeeService {
                 }
                 if (inventoryProductRequestParamList != null && !inventoryProductRequestParamList.isEmpty()) {
                     syncOrderRequestParam.setInventoryProductRequestParamList(inventoryProductRequestParamList);
-                }
-            }
-        }
+                    String requestParam = JSON.toJSONString(syncOrderRequestParam);
+                    logger.kingdee("=============同步订单==============请求url:\n\t"+requestUrl);
+                    logger.kingdee("=============同步订单==============请求参数:\n\t"+requestParam);
 
-        String requestParam = JSON.toJSONString(syncOrderRequestParam);
-        logger.kingdee("=============同步订单==============请求url:\n\t"+requestUrl);
-        logger.kingdee("=============同步订单==============请求参数:\n\t"+requestParam);
+                    String result = httpClientManagerFactory.httpPost(requestUrl.toString(),requestParam,"UTF-8");
+                    logger.kingdee("=============同步订单==============响应参数:\n\t"+result);
 
-        String result = httpClientManagerFactory.httpPost(requestUrl.toString(),requestParam,"UTF-8");
-        logger.kingdee("=============同步订单==============响应参数:\n\t"+result);
+                    synOrderResponseParam = JSON.parseObject(result,SynOrderResponseParam.class);
 
-        SynOrderResponseParam synOrderResponseParam = JSON.parseObject(result,SynOrderResponseParam.class);
-
-
-        //推送失敗拋出異常，讓數據回滾
-        if (synOrderResponseParam!=null && synOrderResponseParam.getError()!=null && !synOrderResponseParam.getError().equals(0)){
-            if (synOrderResponseParam.getErrCode()!=null && !synOrderResponseParam.getErrCode().equals(0)) {
-                if (synOrderResponseParam.getProductList() != null && !synOrderResponseParam.getProductList().isEmpty()) {
-                    String kucunProducts = "";
-                    for (InventoryProductResponseParam inventoryProductResponseParam : synOrderResponseParam.getProductList()) {
-                        kucunProducts += inventoryProductResponseParam.getProductCode() + ",";
+                    //推送失敗拋出異常，讓數據回滾
+                    if (synOrderResponseParam!=null){
+                        if ((synOrderResponseParam.getError()!=null && !synOrderResponseParam.getError().equals(0)) || (synOrderResponseParam.getErrCode()!=null && !synOrderResponseParam.getErrCode().equals(0))) {
+                            if (synOrderResponseParam.getProductList() != null && !synOrderResponseParam.getProductList().isEmpty()) {
+                                String kucunProducts = "";
+                                for (InventoryProductResponseParam inventoryProductResponseParam : synOrderResponseParam.getProductList()) {
+                                    kucunProducts += inventoryProductResponseParam.getProductCode() + ",";
+                                }
+                                kucunProducts = kucunProducts.substring(0, kucunProducts.length() - 1);
+                                throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_INVENTORY_ENABLE, kucunProducts);
+                            }
+                            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_SYNC_FAILED);
+                        }
                     }
-                    kucunProducts = kucunProducts.substring(0, kucunProducts.length() - 1);
-                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_INVENTORY_ENABLE, kucunProducts);
                 }
             }
-            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_SYNC_FAILED);
         }
         return synOrderResponseParam;
     }

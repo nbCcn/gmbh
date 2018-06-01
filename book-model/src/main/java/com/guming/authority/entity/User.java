@@ -20,12 +20,6 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "sys_user")
-@NamedEntityGraph(
-        name = "user.all",
-        attributeNodes = {//attributeNodes 来定义需要懒加载的属性
-                @NamedAttributeNode("roleList"),
-        }
-)
 public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,7 +70,7 @@ public class User extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE},mappedBy = "user",orphanRemoval = true)
     private List<UserDing> userDingList;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "sys_user_role",
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))},
