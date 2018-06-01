@@ -42,10 +42,11 @@ public class LoginController extends BaseController {
     }
 
     @ApiOperation(value = "获取钉钉配置参数")
+    @ApiImplicitParam(name = "singleStringDto",value = "获取到的code",required = true,dataType = "SingleStringDto")
     @PostMapping("/getDingConfig")
     @ResponseBody
-    public ResponseParam<DingSignVo> getDingConfig(){
-        return loginService.config(getRequest());
+    public ResponseParam<DingSignVo> getDingConfig(@RequestBody SingleStringDto singleStringDto){
+        return loginService.config(singleStringDto.getCode());
     }
 
     @ApiOperation(value = "获取钉钉配置参数")

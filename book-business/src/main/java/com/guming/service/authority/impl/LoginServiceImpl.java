@@ -337,7 +337,7 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
     }
 
     @Override
-    public ResponseParam<DingSignVo> config(HttpServletRequest request) {
-        return ResponseParam.success(dingTalkService.config(request));
+    public ResponseParam<DingSignVo> config(String url) {
+        return ResponseParam.success(dingTalkService.config(url));
     }
 }

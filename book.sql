@@ -308,6 +308,7 @@ CREATE TABLE `sys_order_templates_auditing` (
   `spec` varchar(32) DEFAULT NULL COMMENT '规格',
   `unit` varchar(32) DEFAULT NULL COMMENT '单位',
   `stock` int(11) DEFAULT NULL COMMENT '换算率',
+  `stock_unit` varchar(32) DEFAULT NULL COMMENT '换算单位',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -337,6 +338,7 @@ CREATE TABLE `sys_order_templates_finish` (
   `spec` varchar(32) DEFAULT NULL COMMENT '规格',
   `unit` varchar(32) DEFAULT NULL COMMENT '单位',
   `stock` int(11) DEFAULT NULL COMMENT '换算率',
+  `stock_unit` varchar(32) DEFAULT NULL COMMENT '换算单位',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -354,6 +356,7 @@ CREATE TABLE `sys_order_templates_delete` (
   `spec` varchar(32) DEFAULT NULL COMMENT '规格',
   `unit` varchar(32) DEFAULT NULL COMMENT '单位',
   `stock` int(11) DEFAULT NULL COMMENT '换算率',
+  `stock_unit` varchar(32) DEFAULT NULL COMMENT '换算单位',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

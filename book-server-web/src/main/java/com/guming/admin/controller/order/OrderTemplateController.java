@@ -7,6 +7,7 @@ import com.guming.common.base.vo.ResponseParam;
 import com.guming.order.dto.OrderTemplateAddDto;
 import com.guming.order.dto.OrderTemplateProductAddDto;
 import com.guming.order.dto.OrderTemplateUpdateDto;
+import com.guming.order.vo.OrderTemplateVo;
 import com.guming.service.order.OrderTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * @Author: PengCheng
@@ -69,9 +72,8 @@ public class OrderTemplateController extends BaseController {
     @ApiImplicitParam(name = "orderTemplateProductAddDto",required = true,dataType = "OrderTemplateProductAddDto")
     @PostMapping("addOrderProducts")
     @ResponseBody
-    public ResponseParam addOrderProducts(@RequestBody OrderTemplateProductAddDto orderTemplateProductAddDto){
-         orderTemplateService.addOrderProducts(orderTemplateProductAddDto);
-         return getSuccessAddResult();
+    public ResponseParam<List<OrderTemplateVo>> addOrderProducts(@RequestBody OrderTemplateProductAddDto orderTemplateProductAddDto){
+         return ResponseParam.success(orderTemplateService.addOrderProducts(orderTemplateProductAddDto));
     }
 
     @Override

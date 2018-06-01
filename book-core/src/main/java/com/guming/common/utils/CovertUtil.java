@@ -1,5 +1,6 @@
 package com.guming.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
  * @Description:
  * @Date: 2018/4/18
  */
+@Slf4j
 public class CovertUtil {
 
     /**
@@ -31,10 +33,8 @@ public class CovertUtil {
                     resultList.add(result);
                 }
             }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+           log.error("",e);
         }
         return resultList;
     }

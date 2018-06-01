@@ -44,7 +44,9 @@ public class DingTalkService {
     @Autowired
     private DingTalkConfig dingTalkConfig;
 
-    //根据远程调用获取的过时时间提前缓存失效的时间间隔（单位秒）
+    /**
+     * 根据远程调用获取的过时时间提前缓存失效的时间间隔（单位秒）
+     */
     public static final long SPACE_TIME = 100;
 
     public static final String ACCESS_TOKEN_KEY = "client.login.access.token";
@@ -68,6 +70,7 @@ public class DingTalkService {
      */
     public String sign(String ticket, String nonceStr, String timestamp, String url) {
         logger.dingtalk("=====================钉钉获取签名=========================");
+        logger.dingtalk("jsapi_ticket=" + ticket + "&noncestr=" + nonceStr + "&timestamp=" + timestamp + "&url=" + url);
         String plain = "jsapi_ticket=" + ticket + "&noncestr=" + nonceStr + "&timestamp=" + timestamp + "&url=" + url;
         try {
             return EncryptUtils.hashSHAEncrypt(plain.getBytes("UTF-8"));
@@ -77,7 +80,7 @@ public class DingTalkService {
         return null;
     }
 
-    /*
+    /**
      * 在此方法中，为了避免频繁获取access_token，
      * 在距离上一次获取access_token时间在两个小时之内的情况，
      * 将直接从持久化存储中读取access_token
@@ -142,12 +145,12 @@ public class DingTalkService {
     /**
      * 生成签名信息
      *
-     * @param request
+     * @param url
      * @return
      */
-    public DingSignVo config(HttpServletRequest request) {
-        String url = request.getRequestURL().toString();
+    public DingSignVo config(String url) {
         String accessToken = getAccessToken();
+        logger.dingtalk("================accessToken:"+accessToken);
         String ticket = getJsapiTicket(accessToken);
         String nonceStr = UUID.randomUUID().toString().replace("-", "");
         String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
@@ -161,7 +164,6 @@ public class DingTalkService {
         dingSignVo.setTimeStamp(timeStamp);
         dingSignVo.setCorpId(dingTalkConfig.getCorpId());
         dingSignVo.setAgentid(agentid);
-
         return dingSignVo;
     }
 

@@ -29,6 +29,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.*;
@@ -78,9 +80,6 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
         if (user == null){
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NOT_EXISTS);
         }
-        if (userUpdateDto.getRoleIds() == null || userUpdateDto.getRoleIds().isEmpty()){
-            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ROLE_NOT_SELECT);
-        }
         if (!userUpdateDto.getUserName().equals(user.getUserName())){
             Long count = userRepository.countByUserName(userUpdateDto.getUserName());
             if (count != null && count>=1){
@@ -128,13 +127,14 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
     private void userRoleHandler(User user, List<Long> roleIds,Boolean isSuperUser){
         //超级用户无需配置角色
         if (!isSuperUser) {
-            if (roleIds != null && !roleIds.isEmpty()) {
-                List<Role> roles = roleRepository.findRolesByIds(roleIds);
-                if (roles == null || roles.size() != roleIds.size()) {
-                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_ROLE_NOT_EXISTS);
-                }
-                user.setRoleList(roles);
+            if (roleIds == null || roleIds.isEmpty()) {
+                throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_ROLE_NOT_EXISTS);
             }
+            List<Role> roles = roleRepository.findRolesByIds(roleIds);
+            if (roles == null || roles.size() != roleIds.size()) {
+                throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_ROLE_NOT_EXISTS);
+            }
+            user.setRoleList(roles);
         }
     }
 

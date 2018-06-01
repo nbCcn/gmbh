@@ -380,6 +380,7 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
                     orderTemplatesAuditing.setSpec(products.getSpec());
                     orderTemplatesAuditing.setStock(products.getStock());
                     orderTemplatesAuditing.setUnit(products.getUnit());
+                    orderTemplatesAuditing.setStockUnit(products.getStockUnit());
                 }
                 orderTemplatesAuditingList.add(orderTemplatesAuditing);
             }

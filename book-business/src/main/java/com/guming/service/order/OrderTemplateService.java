@@ -4,6 +4,7 @@ import com.guming.common.base.service.BaseService;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.order.dto.OrderTemplateAddDto;
 import com.guming.order.dto.OrderTemplateProductAddDto;
+import com.guming.order.vo.OrderTemplateVo;
 
 import java.util.List;
 
@@ -30,5 +31,5 @@ public interface OrderTemplateService extends BaseService {
      * 添加訂單中的商品
      * @param orderTemplateProductAddDto
      */
-    void addOrderProducts(OrderTemplateProductAddDto orderTemplateProductAddDto);
+    List<OrderTemplateVo> addOrderProducts(OrderTemplateProductAddDto orderTemplateProductAddDto);
 }

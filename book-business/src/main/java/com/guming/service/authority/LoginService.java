@@ -46,7 +46,7 @@ public interface LoginService extends BaseService {
      */
     ResponseParam validateLoginForDing(String code, HttpSession httpSession);
 
-    ResponseParam<DingSignVo> config(HttpServletRequest request);
+    ResponseParam<DingSignVo> config(String url);
 
     /**
      * 钉钉免登，首次登录跳转登录页面方式关联数据方式

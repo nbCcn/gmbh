@@ -53,4 +53,7 @@ public class OrderTemplatesFinish {
 
     @Column(name = "stock")
     private Integer stock;
+
+    @Column(name = "stock_unit")
+    private String stockUnit;
 }
