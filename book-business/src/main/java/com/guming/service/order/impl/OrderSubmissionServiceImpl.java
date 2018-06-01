@@ -625,8 +625,15 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
         if (orderSubmission == null){
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_REVOKE_ERROR);
         }
+
+        PlansArrangement plansArrangement = arrangementService.getSendTimePlansArrangement(orderSubmission.getShopId());
+        if (plansArrangement == null){
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_REVOKE_TIME_ERROR);
+        }
+
         //撤回订单时，删除管理端标记失效的数据
         orderTemplatesSubmissionRepository.deleteByOrderIdAndIsValid(orderSubmission.getId(),false);
+
         orderSubmission.setStatus(OrderStatus.UNSUBMITTED.getCode());
         List<OrderTemplatesSubmission> orderTemplatesSubmissionList = orderSubmission.getOrderTemplatesSubmissionList();
         List<OrderTemplatesSubmission> zeroAmountTemplatesProducts = new ArrayList<>();

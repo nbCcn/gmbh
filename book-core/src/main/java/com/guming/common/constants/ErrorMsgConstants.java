@@ -184,6 +184,7 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_ORDER_INVENTORY_ENABLE = "err.validation.order.inverntory.enable";
     public static final String ERROR_VALIDATION_ORDER_INVENTORY_FAILED = "err.validation.order.inverntory.failed";
     public static final String ERROR_VALIDATION_ORDER_PRODUCTS_NOT_EXISTS = "err.validation.order.products.not.exists";
+    public static final String ERROR_VALIDATION_ORDER_REVOKE_TIME_ERROR = "err.validation.order.revoke.time.error";
 
     //路线安排
     public static final String ERROR_VALIDATION_ARRANGEMENT_CLASS_DATE_EMPTY = "err.validation.arrangement.class.date.empty";
@@ -206,4 +207,5 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_FILE_IMPORT_ROW_NOT_MATCH = "err.validation.file.import.row.not.match";
     public static final String ERROR_VALIDATION_FILE_IMPORT_FAILED = "err.validation.file.import.failed";
     public static final String ERROR_VALIDATION_FILE_EXPORT_FAILED = "err.validation.file.export.failed";
+
 }
