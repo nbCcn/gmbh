@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface TagLineRepository extends BaseRepository<TagLine, Long> {
 
-    @Query("select t from TagLine t where t.tagWarehouseId =?1 order by t.orderCode asc,t.id asc ")
+    @Query("select t from TagLine t where t.tagWarehouseId =?1 order by t.orderCode asc,t.id desc ")
     List<TagLine> findByTagwareHouseId(Long id);
 
     @Query("select t from TagLine t where t.tagWarehouseId in ?1")
