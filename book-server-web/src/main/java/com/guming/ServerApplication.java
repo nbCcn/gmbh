@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableScheduling
 @SpringBootApplication
 @EnableWebMvc
-public class BookApplication extends SpringBootServletInitializer {
+public class ServerApplication extends SpringBootServletInitializer {
 
 /*	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
@@ -48,10 +48,10 @@ public class BookApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(
 			SpringApplicationBuilder builder) {
-		return builder.sources(BookApplication.class);
+		return builder.sources(ServerApplication.class);
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(BookApplication.class, args);
+		SpringApplication.run(ServerApplication.class, args);
 	}
 }

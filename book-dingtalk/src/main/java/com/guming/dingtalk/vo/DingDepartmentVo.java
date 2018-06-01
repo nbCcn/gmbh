@@ -11,13 +11,13 @@ public class DingDepartmentVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //部门Ids
-    private List<Long> deptIdsList;
+    private List<String> deptIdsList;
 
-    public List<Long> getDeptIdsList() {
+    public List<String> getDeptIdsList() {
         return deptIdsList;
     }
 
-    public void setDeptIdsList(List<Long> deptIdsList) {
+    public void setDeptIdsList(List<String> deptIdsList) {
         this.deptIdsList = deptIdsList;
     }
 }

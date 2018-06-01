@@ -51,6 +51,7 @@ public class ShopAddDto extends BaseDto {
     @ApiModelProperty(value = "仓库ID组")
     private List<Long> tagwareHouseList;
 
+    @ApiModelProperty(value = "用户信息组")
     private List<ShopUserDto> userDtos;
 
     public Date getJoinedTime() {

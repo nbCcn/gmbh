@@ -1,6 +1,7 @@
 package com.guming.common.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,7 @@ public class StringToListUtils {
      * @return
      */
     @SuppressWarnings("all")
-    public static List<String> parseList(String data) {
+    public static  List<String> parseList(String data) {
 
         if (!StringUtils.isEmpty(data)) {
             StringBuilder sb = new StringBuilder(data);
@@ -39,11 +40,11 @@ public class StringToListUtils {
      * @param data
      * @return
      */
-    public static String parseString(List<Long> data) {
+    public static <T> String parseString(List<T> data) {
 
         if (data.size() != 0) {
             StringBuilder stringBuilder = new StringBuilder();
-            for (Long id : data) {
+            for (T id : data) {
                 stringBuilder.append(id + ",");
             }
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);

@@ -2,6 +2,7 @@ package com.guming.timer;
 
 import com.guming.base.MyDefaultMq;
 import com.guming.base.MessageBuilder;
+import com.guming.dingtalk.DingTalkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,16 +20,17 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class OrderTopicTodayTimer {
 
+    @Autowired
+    private DingTalkService dingTalkService;
 
     @Autowired
     private MyDefaultMq myDefaultMq;
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void msgStatus() {
         log.info("==============================OrderTopicTodayTimer生产者启动================================");
 
-        myDefaultMq.syncSend(MessageBuilder.of("消息测试11111").topic("OrderTopic_today").build());
-        System.out.println(1);
+        myDefaultMq.syncSend(MessageBuilder.of(true).topic("OrderTopic_today").build());
     }
 
 }

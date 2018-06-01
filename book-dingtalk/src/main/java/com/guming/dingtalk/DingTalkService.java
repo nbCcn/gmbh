@@ -252,28 +252,36 @@ public class DingTalkService {
      *
      * @throws Exception
      */
-    public void userMsgPush(String userIdsStr, PersonMsgPush personMsgPush){
+    public void userMsgPush(String userIdsStr, PersonMsgPush personMsgPush) {
         logger.dingtalk("-------------------钉钉用户推送-----------------");
         String access_token = this.getAccessToken();
 
-        DingTalkClient client = new DefaultDingTalkClient(dingTalkConfig.getMsgUrl());
+        DingTalkClient client = new DefaultDingTalkClient("https://eco.taobao.com/router/rest");
         CorpMessageCorpconversationAsyncsendRequest req = new CorpMessageCorpconversationAsyncsendRequest();
-        req.setMsgtype("oa");
+        req.setMsgtype("OA");
         req.setAgentId(Long.parseLong(dingTalkConfig.getAgentId()));
         req.setUseridList(userIdsStr);
-        req.setToAllUser(false);
-
-        // 发送消息体有待修改
-        req.setMsgcontentString(JSON.toJSONString(personMsgPush));
-        CorpMessageCorpconversationAsyncsendResponse rsp = null;
+        req.setToAllUser(true);
+        req.setMsgcontentString("{\"message_url\": \"http://dingtalk.com\",\"head\": {\"bgcolor\": \"FFBBBBBB\",\"text\": \"头部标题\"},\"body\": {\"title\": \"正文标题\",\"form\": [{\"key\": \"姓名:\",\"value\": \"张三\"},{\"key\": \"爱好:\",\"value\": \"打球、听音乐\"}],\"rich\": {\"num\": \"15.6\",\"unit\": \"元\"},\"content\": \"测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试\",\"image\": \"@lADOADmaWMzazQKA\",\"file_count\": \"3\",\"author\": \"李四 \"}}");
         try {
-            rsp = client.execute(req, access_token);
+            CorpMessageCorpconversationAsyncsendResponse rsp = client.execute(req, access_token);
+            System.out.println(rsp.getBody());
         } catch (ApiException e) {
-            logger.error("",e);
+            logger.info("", e);
+            e.printStackTrace();
         }
-        logger.dingtalk("-------------------响应参数-----------------");
-        logger.dingtalk(rsp.getBody());
-        logger.dingtalk("------------------------------------");
+
+        //// 发送消息体有待修改
+        //req.setMsgcontentString(JSON.toJSONString(personMsgPush));
+        //CorpMessageCorpconversationAsyncsendResponse rsp = null;
+        //try {
+        //    rsp = client.execute(req, access_token);
+        //} catch (ApiException e) {
+        //    logger.error("",e);
+        //}
+        //logger.dingtalk("-------------------响应参数-----------------");
+        //logger.dingtalk(rsp.getBody());
+        //logger.dingtalk("------------------------------------");
     }
 
 
@@ -292,11 +300,11 @@ public class DingTalkService {
             DingDepartmentVo departmentVO = new DingDepartmentVo();
 
             String deptIds = jsonObject.getString("sub_dept_id_list");
-            List<Long> deptIdsList = new ArrayList<>();
+            List<String> deptIdsList = new ArrayList<>();
             List<String> deptIdStrList = StringToListUtils.parseList(deptIds);
             if (!StringUtils.isEmpty(deptIds)) {
                 for (String idStr : deptIdStrList) {
-                    deptIdsList.add(Long.parseLong(idStr));
+                    deptIdsList.add(idStr);
                 }
                 departmentVO.setDeptIdsList(deptIdsList);
             }

@@ -127,7 +127,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 shopVo.setStatusStr(ShopStatus.getShopStatus(shop.getStatus()).getName());
                 shopVo.setAddress(shop.getProvince() + shop.getCity() + shop.getDistrict() + shop.getAddress());
                 List<TagwareHouseVo> tagwareHouseVoList = new ArrayList<>();
-                Set<TagwareHouse> tagwareHouseSet = shop.getTagwareHouseSet();
+                List<TagwareHouse> tagwareHouseSet = shop.getTagwareHouseSet();
                 for (TagwareHouse tagwareHouse : tagwareHouseSet) {
                     TagwareHouseVo tagwareHouseVo = new TagwareHouseVo();
                     BeanUtils.copyProperties(tagwareHouse, tagwareHouseVo);
@@ -187,7 +187,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         shop.setIsDeleted(false);
         //根据仓库ID查询仓库,回存Shop
         List<Long> tagwareHouseIds = addDto.getTagwareHouseList();
-        shop.setTagwareHouseSet(new HashSet<>());
+        shop.setTagwareHouseSet(new ArrayList<>());
         for (Long id : tagwareHouseIds) {
             TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
             shop.getTagwareHouseSet().add(tagwareHouse);
@@ -292,10 +292,14 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         BeanUtils.copyProperties(updateDto, shop, new String[]{"createdTime"});
         shop.setUpdatedTime(new Date());
         List<Long> tagwareHouseIds = updateDto.getTagwareHouseList();
-        shop.setTagwareHouseSet(new HashSet<>());
-        for (Long id : tagwareHouseIds) {
-            TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
-            shop.getTagwareHouseSet().add(tagwareHouse);
+        if (shop.getTagwareHouseSet().get(0).getId().equals(tagwareHouseIds.get(0))) {
+            shop.setTagwareHouseSet(new ArrayList<>());
+            for (Long id : tagwareHouseIds) {
+                TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
+                shop.getTagwareHouseSet().add(tagwareHouse);
+            }
+        } else {
+            shop.setPathshop(null);
         }
 
         //根据等级查询,回存Shop
@@ -410,7 +414,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         shopVo.setTagwareHouseVoList(new ArrayList<>());
         BeanUtils.copyProperties(shop, shopVo);
         shopVo.setStatusStr(ShopStatus.getShopStatus(shop.getStatus()).getName());
-        Set<TagwareHouse> tagwareHouseSet = shop.getTagwareHouseSet();
+        List<TagwareHouse> tagwareHouseSet = shop.getTagwareHouseSet();
         if (tagwareHouseSet != null && !tagwareHouseSet.isEmpty()) {
             for (TagwareHouse tagwareHouse : tagwareHouseSet) {
                 TagwareHouseVo tagwareHouseVo = new TagwareHouseVo();
@@ -644,7 +648,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 if (tagwareHouse == null) {
                     throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_NOT_EXISTS);
                 }
-                Set<TagwareHouse> set = new HashSet<>();
+                List<TagwareHouse> set = new ArrayList<>();
                 set.add(tagwareHouse);
                 shop.setTagwareHouseSet(set);
 

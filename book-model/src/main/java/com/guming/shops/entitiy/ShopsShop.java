@@ -39,7 +39,7 @@ public class ShopsShop implements Serializable {
     private Boolean isDeleted;
 
     //店铺 仓库 关系映射
-    private Set<TagwareHouse> tagwareHouseSet;
+    private List<TagwareHouse> tagwareHouseSet;
 
     private List<User> userList;
 
@@ -192,11 +192,11 @@ public class ShopsShop implements Serializable {
             joinColumns = @JoinColumn(name = "shop_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)),
             inverseJoinColumns = @JoinColumn(name = "tagwarehouse_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
-    public Set<TagwareHouse> getTagwareHouseSet() {
+    public List<TagwareHouse> getTagwareHouseSet() {
         return tagwareHouseSet;
     }
 
-    public void setTagwareHouseSet(Set<TagwareHouse> tagwareHouseSet) {
+    public void setTagwareHouseSet(List<TagwareHouse> tagwareHouseSet) {
         this.tagwareHouseSet = tagwareHouseSet;
     }
 
