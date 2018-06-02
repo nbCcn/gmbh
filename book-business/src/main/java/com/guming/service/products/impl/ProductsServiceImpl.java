@@ -693,4 +693,20 @@ public class ProductsServiceImpl extends BaseServiceImpl implements ProductsServ
         }
         return productsImportExportModelList;
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addProductTagLineWitchNotFilterLineByWareHouse(Long tagWareHouseId,TagLine needAddTagLine){
+        List<Products> productsList = productsRepository.findWareHouseProductWithOutFilterLine(tagWareHouseId);
+        if (productsList!=null && !productsList.isEmpty()){
+            for (Products products : productsList){
+                List<TagLine> tagLineList = products.getTagLineList();
+                if (tagLineList == null){
+                    tagLineList = new ArrayList<>();
+                }
+                tagLineList.add(needAddTagLine);
+            }
+            productsRepository.save(productsList);
+        }
+    }
 }

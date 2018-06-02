@@ -10,6 +10,7 @@ import com.guming.products.dto.UndercarriageDto;
 import com.guming.products.dto.query.ProductsQuery;
 import com.guming.products.entity.Products;
 import com.guming.shops.dto.ShopLineProductsQuery;
+import com.guming.tagline.entity.TagLine;
 
 import java.util.List;
 
@@ -66,4 +67,12 @@ public interface ProductsService extends BaseService {
      * @return
      */
     void checkProductsLimit(Products products, Integer amount);
+
+
+    /**
+     * 添加商品对应的路线（在该路线所属仓库下的未过滤路线的商品）
+     * @param tagWareHouseId
+     * @param needAddTagLine
+     */
+    void addProductTagLineWitchNotFilterLineByWareHouse(Long tagWareHouseId,TagLine needAddTagLine);
 }

@@ -12,6 +12,7 @@ import com.guming.dao.plans.PathRepository;
 import com.guming.dao.tagline.TagLineRepository;
 import com.guming.dao.tagwareHouse.TagwareHouseRepository;
 import com.guming.plans.entity.PlansPath;
+import com.guming.service.products.ProductsService;
 import com.guming.service.tagline.TagLineService;
 import com.guming.tagline.dto.TagLineAddDto;
 import com.guming.tagline.dto.TagLineUpdateDto;
@@ -55,6 +56,9 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
 
     @Autowired
     private TagwareHouseRepository tagwareHouseRepository;
+
+    @Autowired
+    private ProductsService productsService;
 
     @Override
     protected BaseRepository getRepository() {
@@ -116,6 +120,9 @@ public class TagLineServiceImpl extends BaseServiceImpl implements TagLineServic
         tagLine.setCreatedTime(new Date());
         tagLine.setUpdatedTime(new Date());
         TagLine saveTagLine = tagLineRepository.save(tagLine);
+
+        //线路新增时，需要给相关未过滤路线对应仓库下的商品添加关联
+        productsService.addProductTagLineWitchNotFilterLineByWareHouse(tagLineAddDto.getTagwareHouseId(),saveTagLine);
 
         PlansPath path = new PlansPath();
         path.setCreatedTime(new Date());
