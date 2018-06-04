@@ -11,7 +11,8 @@ public enum  OrderStatus {
     SUBMITTED(2,"已提交","order.status.submission"),
     AUDITED(3,"已审核","order.status.audited"),
     DELIVERED(4,"已发货","order.status.delivered"),
-    COMPLETE(5,"已完成","order.status.completed");
+    COMPLETE(5,"已完成","order.status.completed"),
+    CLOSED(6,"已关闭","order.status.closed");
 
     private Integer code;
     private String name;
@@ -25,7 +26,7 @@ public enum  OrderStatus {
 
     public static OrderStatus getOrderStatus(Integer code){
         for (OrderStatus o: OrderStatus.values()){
-            if (o.getCode()==code){
+            if (o.getCode().equals(code)){
                 return o;
             }
         }

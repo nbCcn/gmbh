@@ -1,5 +1,6 @@
 package com.guming.order.entity;
 
+import com.guming.products.entity.Products;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,4 +57,8 @@ public class OrderTemplatesDelete {
 
     @Column(name = "stock_unit")
     private String stockUnit;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id",referencedColumnName = "id",insertable = false,updatable = false,foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    private Products products;
 }

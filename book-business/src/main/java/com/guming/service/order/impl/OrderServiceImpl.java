@@ -20,6 +20,7 @@ import com.guming.order.dto.OrderDto;
 import com.guming.order.dto.RecopientDto;
 import com.guming.order.dto.query.OrderAuditQuery;
 import com.guming.order.dto.query.OrderQuery;
+import com.guming.order.entity.OrderDelete;
 import com.guming.order.entity.OrderSubmission;
 import com.guming.order.entity.OrderTemplatesSubmission;
 import com.guming.order.vo.OrderAuditingVo;
@@ -30,10 +31,7 @@ import com.guming.orderTemplate.entity.Templates;
 import com.guming.orderTemplate.entity.TemplatesType;
 import com.guming.products.entity.ProductsStatus;
 import com.guming.service.arrangement.ArrangementService;
-import com.guming.service.order.OrderAuditingService;
-import com.guming.service.order.OrderFinishService;
-import com.guming.service.order.OrderService;
-import com.guming.service.order.OrderSubmissionService;
+import com.guming.service.order.*;
 import com.guming.service.shops.ShopService;
 import com.guming.shops.entitiy.ShopsShop;
 import com.guming.shops.vo.ShopVo;
@@ -63,6 +61,9 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
 
     @Autowired
     private OrderSubmissionService orderSubmissionService;
+
+    @Autowired
+    private OrderDeleteService orderDeleteService;
 
     @Autowired
     private OrderSubmissionRepository orderSubmissionRepository;
@@ -127,6 +128,8 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
             return orderAuditingService.findByPage(orderQuery);
         }else if (status.equals(OrderStatus.COMPLETE.getCode())){
             return orderFinishService.findByPage(orderQuery);
+        }else if (status.equals(OrderStatus.CLOSED.getCode())){
+            return orderDeleteService.findByPage(orderQuery);
         }
         throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_STATUS_ERROR);
     }
@@ -147,6 +150,8 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
             return orderAuditingService.findById(orderId);
         }else if (status.equals(OrderStatus.COMPLETE.getCode())){
             return orderFinishService.findById(orderId);
+        }else if (status.equals(OrderStatus.CLOSED.getCode())){
+            return orderDeleteService.findById(orderId);
         }else {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_STATUS_ERROR);
         }
@@ -341,6 +346,8 @@ public class OrderServiceImpl extends BaseServiceImpl implements OrderService {
             return orderAuditingService.nextOrder(orderAuditQuery);
         }else if (status.equals(OrderStatus.COMPLETE.getCode())){
             return orderFinishService.nextOrder(orderAuditQuery);
+        }else if (status.equals(OrderStatus.CLOSED.getCode())){
+            return orderDeleteService.nextOrder(orderAuditQuery);
         }else {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_STATUS_ERROR);
         }
