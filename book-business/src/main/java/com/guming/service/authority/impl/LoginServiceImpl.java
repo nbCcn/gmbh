@@ -145,22 +145,25 @@ public class LoginServiceImpl extends BaseServiceImpl implements LoginService {
         if (user.getIsActive() == null || !user.getIsActive()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_NOT_ACTIVE);
         }
-        List<Role> roleList = user.getRoleList();
-        Integer clientRoleSize = 0;
-        if (roleList != null && !roleList.isEmpty()){
-            for (Role role : roleList){
-                if (role.getRoleLevel().equals(RoleConstants.CLIENT_ROLE)){
-                    clientRoleSize +=1;
+        //超级用户不用判断
+        if (!user.getIsSuperuser()) {
+            List<Role> roleList = user.getRoleList();
+            Integer clientRoleSize = 0;
+            if (roleList != null && !roleList.isEmpty()) {
+                for (Role role : roleList) {
+                    if (role.getRoleLevel().equals(RoleConstants.CLIENT_ROLE)) {
+                        clientRoleSize += 1;
+                    }
                 }
-            }
-            //如果是客户端，判断是否有客户端角色
-            if(isClient){
-                if (clientRoleSize<1){
-                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_PASS);
-                }
-            }else {
-                if (roleList.size() == clientRoleSize) {
-                    throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_PASS);
+                //如果是客户端，判断是否有客户端角色
+                if (isClient) {
+                    if (clientRoleSize < 1) {
+                        throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_PASS);
+                    }
+                } else {
+                    if (roleList.size() == clientRoleSize) {
+                        throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_PASS);
+                    }
                 }
             }
         }
