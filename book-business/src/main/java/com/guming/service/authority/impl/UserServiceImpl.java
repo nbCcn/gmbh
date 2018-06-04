@@ -136,6 +136,8 @@ public class UserServiceImpl extends BaseServiceImpl implements UserService {
                 throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_USER_ROLE_NOT_EXISTS);
             }
             user.setRoleList(roles);
+        }else if (roleIds == null || roleIds.isEmpty()){
+            user.getRoleList().clear();
         }
     }
 
