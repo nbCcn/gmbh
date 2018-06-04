@@ -309,7 +309,11 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
                 shop.getTagwareHouseSet().add(tagwareHouse);
             }
-            shopRepository.deletePathShop(shop.getPathshop().getId());
+
+            Pathshop pathshop = shop.getPathshop();
+            if (pathshop != null && pathshop.getId() != null) {
+                shopRepository.deletePathShop(shop.getPathshop().getId());
+            }
         }
 
         //根据等级查询,回存Shop
