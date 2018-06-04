@@ -80,7 +80,7 @@ public class ShoppingCartServiceImpl extends BaseServiceImpl implements Shopping
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResponseParam updateCartProductAmount(Long cartId, Long productId, Integer amount) {
+    public Long updateCartProductAmount(Long cartId, Long productId, Integer amount) {
         OrderSubmission orderSubmission = orderSubmissionRepository.findByIdAndStatus(cartId,OrderStatus.UNSUBMITTED.getCode());
         if (orderSubmission == null){
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_ORDER_CART_NOT_EXISTS);
@@ -129,7 +129,9 @@ public class ShoppingCartServiceImpl extends BaseServiceImpl implements Shopping
                 orderTemplatesSubmissionRepository.save(needToUpdateOrderTemplatesSubmission);
             }
         }
-        return getSuccessOperationResult();
+
+        //最后返回购物车商品种类数量给前台
+        return findCartProductAmount(cartId);
     }
 
     @Override
@@ -140,5 +142,11 @@ public class ShoppingCartServiceImpl extends BaseServiceImpl implements Shopping
             orderTemplatesSubmissionRepository.delete(orderTemplatesSubmissionList);
         }
         return getSuccessDeleteResult();
+    }
+
+    @Override
+    @Transactional(readOnly = true,rollbackFor = Exception.class)
+    public Long findCartProductAmount(Long cartId) {
+        return orderTemplatesSubmissionRepository.findCartProductAmount(cartId);
     }
 }

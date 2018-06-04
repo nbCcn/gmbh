@@ -44,11 +44,18 @@ public interface ShoppingCartService extends BaseService {
      * @param amount
      * @return
      */
-    ResponseParam updateCartProductAmount(Long cartId, Long productId, Integer amount);
+    Long updateCartProductAmount(Long cartId, Long productId, Integer amount);
 
     /**
      * 删除购物车中的商品
      * @param ids
      */
     ResponseParam deleteCartProducts(List<Long> ids);
+
+    /**
+     * 查找购物车商品的种类数量
+     * @param cartId
+     * @return
+     */
+    Long findCartProductAmount(Long cartId);
 }

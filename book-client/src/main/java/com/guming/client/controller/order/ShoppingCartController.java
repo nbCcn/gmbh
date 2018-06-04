@@ -1,5 +1,6 @@
 package com.guming.client.controller.order;
 
+import com.guming.common.base.dto.IdDto;
 import com.guming.common.base.dto.IdsDto;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.order.dto.OrderCartUpdateDto;
@@ -41,8 +42,8 @@ public class ShoppingCartController {
     @ApiImplicitParam(name = "orderCartUpdateDto",required = true,dataType = "OrderCartUpdateDto")
     @PostMapping("updateCartProductAmount")
     @ResponseBody
-    public ResponseParam updateCartProductAmount(@RequestBody OrderCartUpdateDto orderCartUpdateDto){
-        return shoppingCartService.updateCartProductAmount(orderCartUpdateDto.getCartId(),orderCartUpdateDto.getProductId(),orderCartUpdateDto.getAmount());
+    public ResponseParam<Long> updateCartProductAmount(@RequestBody OrderCartUpdateDto orderCartUpdateDto){
+        return ResponseParam.success(shoppingCartService.updateCartProductAmount(orderCartUpdateDto.getCartId(),orderCartUpdateDto.getProductId(),orderCartUpdateDto.getAmount()));
     }
 
     @ApiOperation(value = "删除购物车中的商品")
@@ -51,6 +52,14 @@ public class ShoppingCartController {
     @ResponseBody
     public ResponseParam deleteCartProducts(@RequestBody IdsDto idsDto){
         return shoppingCartService.deleteCartProducts(idsDto.getIds());
+    }
+
+    @ApiOperation(value = "删除购物车中的商品")
+    @ApiImplicitParam(name = "idDto",value = "购物车id",required = true,dataType = "IdDto")
+    @PostMapping("findCartProductAmount")
+    @ResponseBody
+    public ResponseParam<Long> findCartProductAmount(@RequestBody IdDto idDto){
+        return ResponseParam.success(shoppingCartService.findCartProductAmount(idDto.getId()));
     }
 
 }
