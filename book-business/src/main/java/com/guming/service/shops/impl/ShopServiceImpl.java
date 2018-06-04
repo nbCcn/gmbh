@@ -15,6 +15,7 @@ import com.guming.common.utils.*;
 import com.guming.config.BookConfig;
 import com.guming.dao.authority.RoleRepository;
 import com.guming.dao.authority.UserRepository;
+import com.guming.dao.plans.PathRepository;
 import com.guming.dao.shops.ShopRepository;
 import com.guming.dao.tagrank.TagRankRepository;
 import com.guming.dao.tagwareHouse.TagwareHouseRepository;
@@ -84,6 +85,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
     @Autowired
     private TagRankRepository tagRankRepository;
 
+    @Autowired
+    private PathRepository pathRepository;
+
     @Override
     protected BaseRepository getRepository() {
         return this.shopRepository;
@@ -101,6 +105,7 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                     list.add(
                             criteriaBuilder.or(criteriaBuilder.like(root.get("name").as(String.class), "%" + shopDto.getSearch() + "%"),
                                     criteriaBuilder.like(root.get("phone").as(String.class), "%" + shopDto.getSearch() + "%"),
+                                    criteriaBuilder.like(root.get("code").as(String.class), "%" + shopDto.getSearch() + "%"),
                                     criteriaBuilder.like(root.get("address").as(String.class), "%" + shopDto.getSearch() + "%")));
                 }
                 if (shopDto.getStatus() != null) {
@@ -299,7 +304,12 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
                 shop.getTagwareHouseSet().add(tagwareHouse);
             }
         } else {
-            shop.setPathshop(null);
+            shop.setTagwareHouseSet(new ArrayList<>());
+            for (Long id : tagwareHouseIds) {
+                TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
+                shop.getTagwareHouseSet().add(tagwareHouse);
+            }
+            shopRepository.deletePathShop(shop.getPathshop().getId());
         }
 
         //根据等级查询,回存Shop

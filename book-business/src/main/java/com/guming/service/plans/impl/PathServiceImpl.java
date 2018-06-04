@@ -267,6 +267,7 @@ public class PathServiceImpl extends BaseServiceImpl implements PathService {
                 if (StringUtils.isNotBlank(shopFuzzyQuery.getShopName())) {
                     list.add(criteriaBuilder.like(root.get("name").as(String.class), "%" + shopFuzzyQuery.getShopName() + "%"));
                 }
+                list.add(criteriaBuilder.equal(root.get("isDeleted").as(Boolean.class), false));
                 list.add(criteriaBuilder.notEqual(root.get("status").as(Integer.class), 0));
                 Predicate[] predicates = new Predicate[list.size()];
                 return criteriaQuery.where(list.toArray(predicates)).getRestriction();

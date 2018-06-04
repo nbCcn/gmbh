@@ -23,4 +23,8 @@ public interface ShopRepository extends BaseRepository<ShopsShop, Long> {
     Long countByName(String name);
 
     ShopsShop findShopsShopByCode(String code);
+
+    @Query(value = "DELETE FROM sys_plans_pathshop WHERE id = ?1 ",nativeQuery = true)
+    @Modifying
+    void deletePathShop(Long id);
 }
