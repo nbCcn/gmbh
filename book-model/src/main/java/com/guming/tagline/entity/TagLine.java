@@ -4,6 +4,8 @@ package com.guming.tagline.entity;
 import com.guming.plans.entity.PlansPath;
 import com.guming.tagwareHouse.entity.TagwareHouse;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,25 +16,32 @@ import java.util.Date;
  * @Description:
  * @Date: 2018/4/20 09:54
  */
-@Data
+@Getter@Setter
 @Entity
 @Table(name = "sys_setups_tagline")
 public class TagLine implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "name")
     private String name;
+
     @Column(name = "ftype")
     private Integer ftype;
+
     @Column(name = "manager")
     private String manager;
+
     @Column(name = "phone")
     private String phone;
+
     @Column(name = "order_code")
     private Integer orderCode;
+
     @Column(name = "created_time")
     private Date createdTime;
+
     @Column(name = "updated_time")
     private Date updatedTime;
 

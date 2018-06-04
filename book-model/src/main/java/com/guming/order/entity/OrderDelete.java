@@ -126,6 +126,12 @@ public class OrderDelete {
     @Column(name = "distribution_type")
     private Integer distributionType;
 
+    @Column(name = "distribution_phone")
+    private String distribution_phone;
+
+    @Column(name = "distribution_people")
+    private String shippingPeople;
+
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id",referencedColumnName = "id",foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
     private List<OrderTemplatesDelete> orderTemplatesDeleteList;
@@ -156,4 +162,6 @@ public class OrderDelete {
     @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REFRESH)
     @JoinColumn(name = "maker_id",referencedColumnName = "id",foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
     private User user;
+
+
 }

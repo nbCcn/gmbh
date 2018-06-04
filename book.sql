@@ -57,25 +57,25 @@ CREATE TABLE `sys_menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('报货单管理', '001', '/orders', '', 'book', '1', '2018-04-10 11:18:33', '2018-04-10 11:18:35', '1', 'menu.orders', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('送货管理', '002', NULL, NULL, 'calendar', '4', '2018-04-10 11:30:13', '2018-04-10 11:30:16', '1', 'menu.plan', '');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('送货安排', '002001', '/logistical/deliveryPlan', '002', NULL, '3', '2018-04-10 11:32:59', '2018-04-10 11:33:03', '1', 'menu.arrange', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('路线规划', '002002', '/logistical/deliveryLineConfigTextModel', '002', NULL, '2', '2018-04-10 11:34:30', '2018-04-10 11:34:32', '1', 'menu.routes', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('地图规划', '002003', '/logistical/deliveryLineConfig', '002', NULL, '1', '2018-05-02 15:18:30', '2018-05-02 15:18:32', '1', 'menu.map', NULL);
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('送货路线', '002004', '/logistical/deliveryLine', '002', '', '4', '2018-04-10 13:01:06', '2018-04-10 13:01:08', '1', 'menu.route.delivery', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('商品管理', '003', NULL, NULL, 'coffee', '3', '2018-04-10 11:35:18', '2018-04-10 11:35:21', '1', 'menu.products', '');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('商品列表', '003001', '/commodity/goods', '003', NULL, '1', '2018-04-10 11:38:25', '2018-04-10 11:38:28', '1', 'menu.product', '1,2,3,4,7');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('商品分类', '003002', '/commodity/goodsClassify', '003', NULL, '2', '2018-04-10 11:40:17', '2018-04-10 11:40:19', '1', 'menu.product.classification', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('订单模板', '003004', '/commodity/orderTemplate', '003', NULL, '4', '2018-04-10 11:41:17', '2018-04-10 11:41:20', '1', 'menu.product.order', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('店铺管理', '005', NULL, NULL, 'shop', '2', '2018-04-10 13:07:29', '2018-04-10 13:07:32', '1', 'menu.shops', '');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('店铺列表', '005001', '/shop/shops', '005', NULL, '1', '2018-04-10 13:07:55', '2018-04-10 13:07:58', '1', 'menu.shops.list', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('店铺等级', '005002', '/shop/shopLevel', '005', NULL, '2', '2018-04-10 13:11:24', '2018-04-10 13:11:26', '1', 'menu.shops.level', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('系统配置', '006', NULL, '', 'setting', '6', '2018-04-10 13:12:50', '2018-04-10 13:12:52', '1', 'menu.system.config', '');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('用户', '006001', '/authority/user', '006', NULL, '1', '2018-04-10 13:24:52', '2018-04-10 13:24:54', '1', 'menu.user', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('角色', '006002', '/authority/role', '006', '', '2', '2018-04-10 13:30:22', '2018-04-10 13:30:25', '1', 'menu.role', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('仓库设置', '006003', '/logistical/warehouse', '006', NULL, '3', '2018-04-10 12:48:01', '2018-04-10 12:48:03', '1', 'menu.warehouse', '1,2,3,4');
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('基础设置', '006004', '/logistical/baseConfig', '006', NULL, '4', '2018-04-19 18:41:16', '2018-04-19 18:41:19', '1', 'menu.configuration.basic', NULL);
-INSERT INTO sys_menu (`menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES ('通知栏', '006005', NULL, '006', NULL, '5', '2018-04-10 13:05:43', '2018-04-10 13:05:44', '0', 'menu.notice.board', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (1, '报货单管理', '001', '/orders', '', 'book', 1, '2018-04-10 11:18:33', '2018-04-10 11:18:35', 1, 'menu.orders', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (2, '送货管理', '002', NULL, NULL, 'calendar', 4, '2018-04-10 11:30:13', '2018-04-10 11:30:16', 1, 'menu.plan', '');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (3, '送货安排', '002001', '/logistical/deliveryPlan', '002', NULL, 1, '2018-04-10 11:32:59', '2018-04-10 11:33:03', 1, 'menu.arrange', '1,3,4,6');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (4, '路线规划', '002002', '/logistical/deliveryLineConfigTextModel', '002', NULL, 2, '2018-04-10 11:34:30', '2018-04-10 11:34:32', 1, 'menu.routes', '2,3,4,6');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (5, '地图规划', '002003', '/logistical/deliveryLineConfig', '002', NULL, 3, '2018-05-02 15:18:30', '2018-05-02 15:18:32', 1, 'menu.map', NULL);
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (6, '送货路线', '002004', '/logistical/deliveryLine', '002', '', 4, '2018-04-10 13:01:06', '2018-04-10 13:01:08', 1, 'menu.route.delivery', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (7, '商品管理', '003', NULL, NULL, 'coffee', 3, '2018-04-10 11:35:18', '2018-04-10 11:35:21', 1, 'menu.products', '');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (8, '商品列表', '003001', '/commodity/goods', '003', NULL, 1, '2018-04-10 11:38:25', '2018-04-10 11:38:28', 1, 'menu.product', '1,2,3,4,7');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (9, '商品分类', '003002', '/commodity/goodsClassify', '003', NULL, 2, '2018-04-10 11:40:17', '2018-04-10 11:40:19', 1, 'menu.product.classification', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (10, '订单模板', '003004', '/commodity/orderTemplate', '003', NULL, 4, '2018-04-10 11:41:17', '2018-04-10 11:41:20', 1, 'menu.product.order', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (11, '店铺管理', '005', NULL, NULL, 'shop', 2, '2018-04-10 13:07:29', '2018-04-10 13:07:32', 1, 'menu.shops', '');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (12, '店铺列表', '005001', '/shop/shops', '005', NULL, 1, '2018-04-10 13:07:55', '2018-04-10 13:07:58', 1, 'menu.shops.list', '1,2,3,4,5');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (13, '店铺等级', '005002', '/shop/shopLevel', '005', NULL, 2, '2018-04-10 13:11:24', '2018-04-10 13:11:26', 1, 'menu.shops.level', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (14, '系统配置', '006', NULL, '', 'setting', 6, '2018-04-10 13:12:50', '2018-04-10 13:12:52', 1, 'menu.system.config', '');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (15, '用户', '006001', '/authority/user', '006', NULL, 1, '2018-04-10 13:24:52', '2018-04-10 13:24:54', 1, 'menu.user', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (16, '角色', '006002', '/authority/role', '006', '', 2, '2018-04-10 13:30:22', '2018-04-10 13:30:25', 1, 'menu.role', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (17, '仓库设置', '006003', '/logistical/warehouse', '006', NULL, 3, '2018-04-10 12:48:01', '2018-04-10 12:48:03', 1, 'menu.warehouse', '1,2,3,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (18, '基础设置', '006004', '/logistical/baseConfig', '006', NULL, 4, '2018-04-19 18:41:16', '2018-04-19 18:41:19', 1, 'menu.configuration.basic', '2,4');
+INSERT INTO `book`.`sys_menu`(`id`, `menu_name`, `menu_code`, `menu_url`, `pid`, `menu_img`, `menu_order`, `create_date`, `update_date`, `is_valid`, `i18n_menu_name`, `operation_type`) VALUES (19, '通知栏', '006005', NULL, '006', NULL, 5, '2018-04-10 13:05:43', '2018-04-10 13:05:44', 0, 'menu.notice.board', '1,2,3,4');
 
 -- 角色权限表
 CREATE TABLE `sys_role_menu` (
@@ -199,6 +199,8 @@ CREATE TABLE `sys_order_auditing` (
   `shop_code` varchar(32) DEFAULT NULL COMMENT '商铺编号',
   `send_shop_id` bigint(20) DEFAULT NULL COMMENT '送货店铺的id',
   `distribution_type` int(11) DEFAULT NULL COMMENT '配送方式',
+  `distribution_phone` varchar(30) DEFAULT NULL COMMENT '配送手机号',
+   `distribution_people` varchar(150) DEFAULT NULL COMMENT '配送人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -256,6 +258,8 @@ CREATE TABLE `sys_order_finish` (
   `shop_code` varchar(32) DEFAULT NULL COMMENT '商铺编号',
   `send_shop_id` bigint(20) DEFAULT NULL COMMENT '送货店铺的id',
   `distribution_type` int(11) DEFAULT NULL COMMENT '配送方式',
+  `distribution_phone` varchar(30) DEFAULT NULL COMMENT '配送手机号',
+  `distribution_people` varchar(150) DEFAULT NULL COMMENT '配送人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -292,6 +296,8 @@ CREATE TABLE `sys_order_delete` (
   `shop_code` varchar(32) DEFAULT NULL COMMENT '商铺编号',
   `send_shop_id` bigint(20) DEFAULT NULL COMMENT '送货店铺的id',
   `distribution_type` int(11) DEFAULT NULL COMMENT '配送方式',
+  `distribution_phone` varchar(30) DEFAULT NULL COMMENT '配送手机号',
+  `distribution_people` varchar(150) DEFAULT NULL COMMENT '配送人',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

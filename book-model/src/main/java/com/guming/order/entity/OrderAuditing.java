@@ -53,6 +53,8 @@ public class OrderAuditing {
     private String shopCode;
     private Long sendShopId;
     private Integer distributionType;
+    private String distributionPhone;
+    private String shippingPeople;
     private List<OrderTemplatesAuditing> orderTemplatesAuditingList;
 
     private TemplatesType templatesType;
@@ -374,6 +376,25 @@ public class OrderAuditing {
 
     public void setSendShopId(Long sendShopId) {
         this.sendShopId = sendShopId;
+    }
+
+    @Column(name = "distribution_phone")
+    public String getDistributionPhone() {
+        return distributionPhone;
+    }
+
+
+    public void setDistributionPhone(String distributionPhone) {
+        this.distributionPhone = distributionPhone;
+    }
+
+    @Column(name = "distribution_people")
+    public String getShippingPeople() {
+        return shippingPeople;
+    }
+
+    public void setShippingPeople(String shippingPeople) {
+        this.shippingPeople = shippingPeople;
     }
 
     @OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)

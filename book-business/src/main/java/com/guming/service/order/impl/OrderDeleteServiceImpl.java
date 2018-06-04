@@ -156,7 +156,9 @@ public class OrderDeleteServiceImpl extends BaseServiceImpl implements OrderDele
                 if (tagLine != null) {
                     orderVo.setTagLineMapVo(new MapVo(tagLine.getId(), tagLine.getName()));
                     orderVo.setShippingMapVo(new MapVo(tagLine.getFtype().longValue(), i18nHandler(LogisticsStatus.getLogisticsStatus(tagLine.getFtype()).getI18N())));
+                    orderVo.setDistributionPhone(tagLine.getPhone());
                     orderVo.setShippingPeople(tagLine.getManager());
+
                     //仓库
                     TagwareHouse tagwareHouse = tagLine.getTagwareHouse();
                     if (tagwareHouse != null) {

@@ -340,6 +340,8 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
                 orderAuditing.setWarehouseId(tagLine.getTagWarehouseId());
                 orderAuditing.setLineId(tagLine.getId());
                 orderAuditing.setDistributionType(tagLine.getFtype());
+                orderAuditing.setDistributionPhone(tagLine.getPhone());
+                orderAuditing.setShippingPeople(tagLine.getManager());
             }
         }
 
@@ -525,6 +527,7 @@ public class OrderSubmissionServiceImpl extends BaseServiceImpl implements Order
                     orderVo.setTagLineMapVo(new MapVo(tagLine.getId(), tagLine.getName()));
                     orderVo.setShippingMapVo(new MapVo(tagLine.getFtype().longValue(), i18nHandler(LogisticsStatus.getLogisticsStatus(tagLine.getFtype()).getI18N())));
                     orderVo.setShippingPeople(tagLine.getManager());
+                    orderVo.setDistributionPhone(tagLine.getPhone());
                     //仓库
                     TagwareHouse tagwareHouse = tagLine.getTagwareHouse();
                     if (tagwareHouse != null) {

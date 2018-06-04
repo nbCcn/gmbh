@@ -85,6 +85,11 @@ public class OrderVo {
     @ApiModelProperty(value = "配送负责人")
     private String shippingPeople;
 
+    @Setter
+    @Getter
+    @ApiModelProperty(value = "配送负责人联系电话")
+    private String distributionPhone;
+
     @JsonIgnore
     @Setter
     @Getter
