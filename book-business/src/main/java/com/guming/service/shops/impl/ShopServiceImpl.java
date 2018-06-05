@@ -181,9 +181,9 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         if (addDto.getStatus() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_STATUS_EMPTY);
         }
-        Long count = shopRepository.countByName(addDto.getName());
+        Long count = shopRepository.countByCode(addDto.getCode());
         if (count != null && count >= 1) {
-            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_NAME_EXISTS);
+            throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_SHOP_CLASS_CODE_EXISTS);
         }
         ShopsShop shop = new ShopsShop();
         BeanUtils.copyProperties(addDto, shop);
@@ -297,6 +297,13 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         BeanUtils.copyProperties(updateDto, shop, new String[]{"createdTime"});
         shop.setUpdatedTime(new Date());
         List<Long> tagwareHouseIds = updateDto.getTagwareHouseList();
+        if (shop.getTagwareHouseSet() == null) {
+            shop.setTagwareHouseSet(new ArrayList<>());
+            for (Long id : tagwareHouseIds) {
+                TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
+                shop.getTagwareHouseSet().add(tagwareHouse);
+            }
+        }
         if (shop.getTagwareHouseSet().get(0).getId().equals(tagwareHouseIds.get(0))) {
             shop.setTagwareHouseSet(new ArrayList<>());
             for (Long id : tagwareHouseIds) {

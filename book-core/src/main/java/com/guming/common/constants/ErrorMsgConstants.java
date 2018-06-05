@@ -111,6 +111,7 @@ public class ErrorMsgConstants {
     public static final String ERROR_VALIDATION_SHOP_CLASS_USER_EXISTS = "err.validation.shop.class.user.exists";
     public static final String ERROR_VALIDATION_SHOP_CLASS_USER_NOT_EXISTS = "err.validation.shop.class.user.not.exists";
     public static final String ERROR_VALIDATION_SHOP_CLASS_USER_IS_EXISTS = "err.validation.shop.class.user.is.exists";
+    public static final String ERROR_VALIDATION_SHOP_CLASS_CODE_EXISTS = "err.validation.shop.class.code.exists";
 
 
     public static final String ERR_VALIDATION_TAGLINE_CLASS_ID_EMPTY = "err.validation.tagline.class.id.empty";
