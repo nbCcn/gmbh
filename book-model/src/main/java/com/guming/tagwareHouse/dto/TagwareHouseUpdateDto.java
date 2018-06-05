@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(value = "TagwareHouseUpdateDto", description = "仓库更新实体")
 public class TagwareHouseUpdateDto extends TagwareHouseAddDto {
-    @ApiModelProperty(value = "店铺ID", required = true)
+    @ApiModelProperty(value = "仓库ID", required = true)
     private Long id;
 
     public Long getId() {

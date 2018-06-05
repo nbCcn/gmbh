@@ -7,8 +7,12 @@ import com.guming.common.base.vo.Pagination;
 import com.guming.common.base.vo.ResponseParam;
 import com.guming.common.constants.ErrorMsgConstants;
 import com.guming.common.exceptions.ErrorMsgException;
+import com.guming.dao.tagbank.TagBankRepository;
 import com.guming.dao.tagwareHouse.TagwareHouseRepository;
 import com.guming.service.tagwareHouse.TagwareHouseService;
+import com.guming.tagbank.dto.TagBankAddDto;
+import com.guming.tagbank.entity.TagBank;
+import com.guming.tagbank.vo.TagBankVo;
 import com.guming.tagline.entity.TagLine;
 import com.guming.tagwareHouse.dto.TagwareHouseAddDto;
 import com.guming.tagwareHouse.dto.TagwareHouseUpdateDto;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +44,10 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
 
     @Autowired
     private TagwareHouseRepository tagwareHouseRepository;
+
+    @Autowired
+    private TagBankRepository tagBankRepository;
+
 
     @Override
     protected BaseRepository getRepository() {
@@ -77,7 +86,7 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
     }
 
     @Override
-    @Transactional(readOnly = false,rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> add(TagwareHouseAddDto tagwareHouseAddDto) {
         if (StringUtils.isEmpty(tagwareHouseAddDto.getName())) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_NAME_EMPTY);
@@ -90,12 +99,27 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
         BeanUtils.copyProperties(tagwareHouseAddDto, tagwareHouse);
         tagwareHouse.setCreatedTime(new Date());
         tagwareHouse.setUpdatedTime(new Date());
+
+        List<TagBankAddDto> tagBankAddDtoList = tagwareHouseAddDto.getTagBankAddDtoList();
+
+        if (tagBankAddDtoList != null) {
+            List<TagBank> tagBankList = new ArrayList<>();
+            for (TagBankAddDto tagBankAddDto : tagBankAddDtoList) {
+                TagBank tagBank = new TagBank();
+                BeanUtils.copyProperties(tagBankAddDto, tagBank);
+                tagBank.setCreatedTime(new Date());
+                tagBank.setUpdatedTime(new Date());
+                tagBankList.add(tagBank);
+            }
+            tagwareHouse.setTagBankList(tagBankList);
+        }
+
         tagwareHouseRepository.save(tagwareHouse);
         return getSuccessAddResult();
     }
 
     @Override
-    @Transactional(readOnly = false,rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam<?> update(TagwareHouseUpdateDto tagwareHouseUpdateDto) {
         if (tagwareHouseUpdateDto.getId() == null) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_ID_EMPTY);
@@ -106,12 +130,38 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
         }
         BeanUtils.copyProperties(tagwareHouseUpdateDto, tagwareHouse);
         tagwareHouse.setUpdatedTime(new Date());
+
+        List<TagBankAddDto> tagBankAddDtoList = tagwareHouseUpdateDto.getTagBankAddDtoList();
+
+        if (tagBankAddDtoList != null) {
+            List<TagBank> tagBankList = new ArrayList<>();
+            for (TagBankAddDto tagBankAddDto : tagBankAddDtoList) {
+                if (tagBankAddDto.getId() == null) {
+                    TagBank tagBank = new TagBank();
+                    BeanUtils.copyProperties(tagBankAddDto, tagBank);
+                    tagBank.setCreatedTime(new Date());
+                    tagBank.setUpdatedTime(new Date());
+                    tagBankList.add(tagBank);
+                } else {
+                    TagBank tagBank = tagBankRepository.findOne(tagBankAddDto.getId());
+                    BeanUtils.copyProperties(tagBankAddDto, tagBank);
+                    tagBank.setUpdatedTime(new Date());
+                    tagBankList.add(tagBank);
+                }
+
+            }
+            tagwareHouse.setTagBankList(tagBankList);
+        } else {
+            tagwareHouse.setTagBankList(null);
+        }
+
+
         tagwareHouseRepository.save(tagwareHouse);
         return getSuccessUpdateResult();
     }
 
     @Override
-    @Transactional(readOnly = false,rollbackFor = Exception.class)
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ResponseParam delete(List<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             throw new ErrorMsgException(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_CLASS_NOT_EXISTS_DELETE);
@@ -121,12 +171,12 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
             TagwareHouse tagwareHouse = tagwareHouseRepository.findOne(id);
             List<TagLine> tagLines = tagwareHouse.getTagLines();
             if (tagLines == null) {
-                notDeleteTagWareHouse+=tagwareHouse.getName()+",";
+                notDeleteTagWareHouse += tagwareHouse.getName() + ",";
             }
         }
-        if (!StringUtils.isEmpty(notDeleteTagWareHouse)){
-            notDeleteTagWareHouse = notDeleteTagWareHouse.substring(0,notDeleteTagWareHouse.length()-1);
-            return ResponseParam.error(ErrorMsgConstants.OPTION_FAILED_HELF_CODE,i18nHandler(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_LINE_EXISTS,notDeleteTagWareHouse));
+        if (!StringUtils.isEmpty(notDeleteTagWareHouse)) {
+            notDeleteTagWareHouse = notDeleteTagWareHouse.substring(0, notDeleteTagWareHouse.length() - 1);
+            return ResponseParam.error(ErrorMsgConstants.OPTION_FAILED_HELF_CODE, i18nHandler(ErrorMsgConstants.ERROR_VALIDATION_TAGWAREHOUSE_LINE_EXISTS, notDeleteTagWareHouse));
         }
 
         tagwareHouseRepository.deleteByIds(ids);
@@ -145,6 +195,18 @@ public class TagwareHouseServiceImpl extends BaseServiceImpl implements TagwareH
         }
         TagwareHouseVo tagwareHouseVo = new TagwareHouseVo();
         BeanUtils.copyProperties(tagwareHouse, tagwareHouseVo);
+
+        List<TagBank> tagbankList = tagwareHouse.getTagBankList();
+
+        if (tagbankList != null) {
+            List<TagBankVo> tagBankVoList = new ArrayList<>();
+            for (TagBank tagBank : tagbankList) {
+                TagBankVo tagBankVo = new TagBankVo();
+                BeanUtils.copyProperties(tagBank, tagBankVo);
+                tagBankVoList.add(tagBankVo);
+            }
+            tagwareHouseVo.setTagBankVoList(tagBankVoList);
+        }
         return ResponseParam.success(tagwareHouseVo);
     }
 

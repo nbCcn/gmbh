@@ -1,6 +1,7 @@
 package com.guming.tagwareHouse.vo;
 
 import com.guming.common.utils.DateUtil;
+import com.guming.tagbank.vo.TagBankVo;
 import com.guming.tagline.vo.TagLineVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -34,6 +35,10 @@ public class TagwareHouseVo {
 
     @ApiModelProperty(value = "路线信息组")
     private List<TagLineVo> taglineListVo;
+
+    @ApiModelProperty(value = "银行账户信息组")
+    private List<TagBankVo> tagBankVoList;
+
 
     public List<TagLineVo> getTaglineListVo() {
         return taglineListVo;
@@ -129,31 +134,18 @@ public class TagwareHouseVo {
         this.updatedTimeStr = updatedTimeStr;
     }
 
-    @Override
-    public String toString() {
-        return "TagwareHouseVo{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", groupId=" + groupId +
-                ", lng=" + lng +
-                ", lat=" + lat +
-                ", webhook='" + webhook + '\'' +
-                ", createdTime=" + createdTime +
-                ", createdTimeStr='" + createdTimeStr + '\'' +
-                ", updatedTime=" + updatedTime +
-                ", updatedTimeStr='" + updatedTimeStr + '\'' +
-                ", taglineListVo=" + taglineListVo +
-                '}';
+    public List<TagBankVo> getTagBankVoList() {
+        return tagBankVoList;
+    }
+
+    public void setTagBankVoList(List<TagBankVo> tagBankVoList) {
+        this.tagBankVoList = tagBankVoList;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         TagwareHouseVo that = (TagwareHouseVo) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
@@ -161,16 +153,17 @@ public class TagwareHouseVo {
                 Objects.equals(lng, that.lng) &&
                 Objects.equals(lat, that.lat) &&
                 Objects.equals(webhook, that.webhook) &&
-                Objects.equals(createdTime, that.createdTime) &&
                 Objects.equals(createdTimeStr, that.createdTimeStr) &&
-                Objects.equals(updatedTime, that.updatedTime) &&
+                Objects.equals(createdTime, that.createdTime) &&
                 Objects.equals(updatedTimeStr, that.updatedTimeStr) &&
-                Objects.equals(taglineListVo, that.taglineListVo);
+                Objects.equals(updatedTime, that.updatedTime) &&
+                Objects.equals(taglineListVo, that.taglineListVo) &&
+                Objects.equals(tagBankVoList, that.tagBankVoList);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, groupId, lng, lat, webhook, createdTime, createdTimeStr, updatedTime, updatedTimeStr, taglineListVo);
+        return Objects.hash(id, name, groupId, lng, lat, webhook, createdTimeStr, createdTime, updatedTimeStr, updatedTime, taglineListVo, tagBankVoList);
     }
 }
