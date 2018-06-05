@@ -297,29 +297,30 @@ public class ShopServiceImpl extends BaseServiceImpl implements ShopService {
         BeanUtils.copyProperties(updateDto, shop, new String[]{"createdTime"});
         shop.setUpdatedTime(new Date());
         List<Long> tagwareHouseIds = updateDto.getTagwareHouseList();
-        if (shop.getTagwareHouseSet() == null) {
-            shop.setTagwareHouseSet(new ArrayList<>());
-            for (Long id : tagwareHouseIds) {
-                TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
-                shop.getTagwareHouseSet().add(tagwareHouse);
-            }
-        }
-        if (shop.getTagwareHouseSet().get(0).getId().equals(tagwareHouseIds.get(0))) {
+        if (shop.getTagwareHouseSet().size() == 0) {
             shop.setTagwareHouseSet(new ArrayList<>());
             for (Long id : tagwareHouseIds) {
                 TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
                 shop.getTagwareHouseSet().add(tagwareHouse);
             }
         } else {
-            shop.setTagwareHouseSet(new ArrayList<>());
-            for (Long id : tagwareHouseIds) {
-                TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
-                shop.getTagwareHouseSet().add(tagwareHouse);
-            }
+            if (shop.getTagwareHouseSet().get(0).getId().equals(tagwareHouseIds.get(0))) {
+                shop.setTagwareHouseSet(new ArrayList<>());
+                for (Long id : tagwareHouseIds) {
+                    TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
+                    shop.getTagwareHouseSet().add(tagwareHouse);
+                }
+            } else {
+                shop.setTagwareHouseSet(new ArrayList<>());
+                for (Long id : tagwareHouseIds) {
+                    TagwareHouse tagwareHouse = tagwareHouseRepository.findById(id);
+                    shop.getTagwareHouseSet().add(tagwareHouse);
+                }
 
-            Pathshop pathshop = shop.getPathshop();
-            if (pathshop != null && pathshop.getId() != null) {
-                shopRepository.deletePathShop(shop.getPathshop().getId());
+                Pathshop pathshop = shop.getPathshop();
+                if (pathshop != null && pathshop.getId() != null) {
+                    shopRepository.deletePathShop(shop.getPathshop().getId());
+                }
             }
         }
 
